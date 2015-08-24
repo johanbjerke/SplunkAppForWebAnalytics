@@ -1,0 +1,1814 @@
+{
+    "modelName": "Web",
+    "displayName": "Web",
+    "description": "Web Data Model",
+    "objectSummary": {
+        "Event-Based": 3,
+        "Transaction-Based": 0,
+        "Search-Based": 1
+    },
+    "objects": [
+        {
+            "objectName": "Web",
+            "displayName": "Web",
+            "parentName": "BaseEvent",
+            "fields": [
+                {
+                    "fieldName": "category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cookie",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cookie",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "duration",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "duration",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "response_time",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "response_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "site",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "site",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "tag",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "tag",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_path",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_path",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_query",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_query",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "eventtype",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "eventtype",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "clientip",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "clientip",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "http_locale",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "http_locale",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "app",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "app",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cached",
+                    "owner": "Web",
+                    "type": "boolean",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cached",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "_time",
+                    "owner": "BaseEvent",
+                    "type": "timestamp",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "host",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "host",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "source",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "source",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "sourcetype",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "sourcetype",
+                    "comment": "",
+                    "fieldSearch": ""
+                }
+            ],
+            "calculations": [
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "action",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "action",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_action",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "bytes",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "bytes",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_bytes",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case(isnum(bytes),bytes,isnum(bytes_in) AND isnum(bytes_out),bytes_in+bytes_out,1=1,null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "bytes_in",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "bytes_in",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_bytes_in",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case(isnum(bytes_in),bytes_in,isnum(bytes) AND isnum(bytes_out),bytes-bytes_out,1=1,null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "bytes_out",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "bytes_out",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_bytes_out",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case(isnum(bytes_out),bytes_out,isnum(bytes) AND isnum(bytes_in),bytes-bytes_in,1=1,null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "dest",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "dest",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_dest",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(dest) OR dest=\"\" OR dest=\"-\",\"unknown\",dest)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_content_type",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_content_type",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_http_content_type",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(http_content_type) OR http_content_type=\"\" OR http_content_type=\"-\",\"unknown\",http_content_type)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_method",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_method",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_http_method",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(http_method) OR http_method=\"\" OR http_method=\"-\",\"unknown\",http_method)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_referer",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_referer",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "s4ti01pgw91wcdi",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "http_referer"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_user_agent",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_user_agent",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_http_user_agent",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(http_user_agent) OR http_user_agent=\"\" OR http_user_agent=\"-\",\"unknown\",http_user_agent)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_user_agent_length",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_user_agent_length",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_http_user_agent_length",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "len(http_user_agent)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "user",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "user",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_user",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "src",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "src",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_src",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(src) OR src=\"\" OR src=\"-\",\"unknown\",src)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "status",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "status",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_status",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(status) OR status=\"\" OR status=\"-\",\"unknown\",status)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "url",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "url",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_fillnull_url",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(isnull(url) OR url=\"\" OR url=\"-\",\"unknown\",url)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "url_length",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "url_length",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_url_length",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "len(url)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "vendor_product",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "vendor_product",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "Web_vendor_product",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_channel",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_channel",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "uc3q6ne28ia",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(http_referer=\"-\",\"Direct\", if(http_referer_domain==host,\"Direct\", if(isnull(http_channel), \"Referal\", http_channel)))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "dmReload",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "dmReload",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "7g3czxau6pe",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "(1+1)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "ua_os_family",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_os_family",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_os_family"
+                        },
+                        {
+                            "fieldName": "ua_os_major",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_os_major",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_os_major"
+                        },
+                        {
+                            "fieldName": "ua_os_minor",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_os_minor",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_os_minor"
+                        },
+                        {
+                            "fieldName": "ua_os_patch",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_os_patch",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_os_patch"
+                        },
+                        {
+                            "fieldName": "ua_os_patch_minor",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_os_patch_minor",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_os_patch_minor"
+                        },
+                        {
+                            "fieldName": "ua_family",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_family",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_family"
+                        },
+                        {
+                            "fieldName": "ua_major",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_major",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_major"
+                        },
+                        {
+                            "fieldName": "ua_minor",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_minor",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_minor"
+                        },
+                        {
+                            "fieldName": "ua_patch",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_patch",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_patch"
+                        },
+                        {
+                            "fieldName": "ua_device",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_device",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "ua_device"
+                        }
+                    ],
+                    "calculationType": "Lookup",
+                    "lookupName": "user_agents",
+                    "comment": "",
+                    "lookupInputs": [
+                        {
+                            "inputField": "useragent",
+                            "lookupField": "http_user_agent"
+                        }
+                    ],
+                    "owner": "Web",
+                    "calculationID": "m1qtper7mhjmj9k9",
+                    "editable": true
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "http_session",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "http_session"
+                        },
+                        {
+                            "fieldName": "http_session_start",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_start",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "FirstRequest"
+                        },
+                        {
+                            "fieldName": "http_session_end",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_end",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "LastRequest"
+                        },
+                        {
+                            "fieldName": "http_session_pageviews",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_pageviews",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "Pageviews"
+                        },
+                        {
+                            "fieldName": "http_session_duration",
+                            "owner": "Web",
+                            "type": "number",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_duration",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "Duration"
+                        },
+                        {
+                            "fieldName": "http_session_referrer",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_referrer",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "http_referer"
+                        },
+                        {
+                            "fieldName": "http_session_referrer_domain",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_referrer_domain",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "http_referer_domain"
+                        },
+                        {
+                            "fieldName": "http_session_referrer_hostname",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_referrer_hostname",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "http_referer_hostname"
+                        },
+                        {
+                            "fieldName": "http_session_channel",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "http_session_channel",
+                            "comment": "",
+                            "fieldSearch": "",
+                            "lookupOutputFieldName": "http_session_channel"
+                        }
+                    ],
+                    "calculationType": "Lookup",
+                    "lookupName": "WA_sessions",
+                    "comment": "",
+                    "lookupInputs": [
+                        {
+                            "inputField": "user",
+                            "lookupField": "user"
+                        }
+                    ],
+                    "owner": "Web",
+                    "calculationID": "kcgi6xy5cul3di",
+                    "editable": true
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "ua_mobile",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_mobile",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "t6dc9rnw8j16ecdi",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(eventtype==\"ua-mobile\",'ua_device', NULL)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "ua_bot",
+                            "owner": "Web",
+                            "type": "string",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "ua_bot",
+                            "comment": "",
+                            "fieldSearch": ""
+                        }
+                    ],
+                    "calculationID": "87iztizfslnxw29",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "if(eventtype==\"ua-bot\",'ua_family', NULL)"
+                }
+            ],
+            "constraints": [
+                {
+                    "search": "tag=web",
+                    "owner": "Web"
+                }
+            ],
+            "lineage": "Web"
+        },
+        {
+            "objectName": "Proxy",
+            "displayName": "Proxy",
+            "parentName": "Web",
+            "fields": [
+                {
+                    "fieldName": "category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cookie",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cookie",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "duration",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "duration",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "response_time",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "response_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "site",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "site",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "tag",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "tag",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_path",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_path",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_query",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_query",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "eventtype",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "eventtype",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "clientip",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "clientip",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "http_locale",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "http_locale",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "app",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "app",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cached",
+                    "owner": "Web",
+                    "type": "boolean",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cached",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "_time",
+                    "owner": "BaseEvent",
+                    "type": "timestamp",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "host",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "host",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "source",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "source",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "sourcetype",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "sourcetype",
+                    "comment": "",
+                    "fieldSearch": ""
+                }
+            ],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "tag=proxy",
+                    "owner": "Web.Proxy"
+                }
+            ],
+            "lineage": "Web.Proxy"
+        },
+        {
+            "objectName": "Missing_Extractions_Web",
+            "displayName": "Missing Extractions (S.o.S)",
+            "parentName": "Web",
+            "fields": [
+                {
+                    "fieldName": "category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cookie",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cookie",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "dest_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "dest_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "duration",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "duration",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "response_time",
+                    "owner": "Web",
+                    "type": "number",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "response_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "site",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "site",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "src_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "src_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "tag",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "tag",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_path",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_path",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri_query",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri_query",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_bunit",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_bunit",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_category",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": true,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_category",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user_priority",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user_priority",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "eventtype",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "eventtype",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "clientip",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "clientip",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "http_locale",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "http_locale",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "uri",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "uri",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "app",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "app",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "cached",
+                    "owner": "Web",
+                    "type": "boolean",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "cached",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "_time",
+                    "owner": "BaseEvent",
+                    "type": "timestamp",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "host",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "host",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "source",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "source",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "sourcetype",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "sourcetype",
+                    "comment": "",
+                    "fieldSearch": ""
+                }
+            ],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "(action=\"unknown\" OR dest=\"unknown\" OR http_content_type=\"unknown\" OR http_method=\"unknown\" OR http_referer=\"unknown\" OR http_user_agent=\"unknown\" OR src=\"unknown\" OR status=\"unknown\" OR url=\"unknown\" OR user=\"unknown\" OR vendor_product=\"unknown\")",
+                    "owner": "Web.Missing_Extractions_Web"
+                }
+            ],
+            "lineage": "Web.Missing_Extractions_Web"
+        },
+        {
+            "objectName": "Untagged_Web",
+            "displayName": "Untagged Web Data (S.o.S)",
+            "parentName": "BaseSearch",
+            "fields": [
+                {
+                    "fieldName": "_time",
+                    "owner": "Untagged_Web",
+                    "type": "timestamp",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "_time",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "host",
+                    "owner": "Untagged_Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "host",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "source",
+                    "owner": "Untagged_Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "source",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "sourcetype",
+                    "owner": "Untagged_Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "sourcetype",
+                    "comment": "",
+                    "fieldSearch": ""
+                }
+            ],
+            "calculations": [],
+            "constraints": [],
+            "lineage": "Untagged_Web",
+            "baseSearch": "http sourcetype!=stash NOT (tag=web)"
+        }
+    ],
+    "objectNameList": [
+        "Web",
+        "Proxy",
+        "Missing_Extractions_Web",
+        "Untagged_Web"
+    ]
+}

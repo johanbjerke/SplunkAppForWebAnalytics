@@ -1,0 +1,120 @@
+<form>
+  <label>Goals Overview</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single depends="$site$">
+        <title>Goal 1 - Conversion Rate</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_1" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+      </single>
+    </panel>
+    <panel>
+      <single depends="$site$">
+        <title>Goal 2 - Conversion Rate</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_2" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+      </single>
+    </panel>
+    <panel>
+      <single depends="$site$">
+        <title>Goal 3 - Conversion Rate</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_3" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="goal" searchWhenChanged="true">
+        <label>Goal</label>
+        <search>
+          <query>|inputlookup WA_goals  | dedup goal_id | fields goal_id description | sort goal_id</query>
+        </search>
+        <fieldForLabel>description</fieldForLabel>
+        <fieldForValue>goal_id</fieldForValue>
+        <default>goal_1</default>
+      </input>
+      <chart>
+        <title>$goal$ - Over Time</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY _time $span$, Web.http_session,Web.uri,Web.site | eval goal_id="$goal$" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | timechart  $span$ dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2) | eval CompletionRate=round(100*(Completed/Entries),2) | fields _time Completed "Conversion Rate"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisY2.enabled">true</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.axisY.maximumNumber">5</option>
+        <option name="charting.axisY.minimumNumber">0</option>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="charting.axisTitleY.text">Conversion Rate (%)</option>
+        <option name="charting.chart.overlayFields">Completed</option>
+        <option name="charting.axisTitleY2.text">Completed Goals</option>
+      </chart>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,101 @@
+<form script="tokenlinks.js">
+  <label>Goals Setup</label>
+  <description>Goals are tracked website pageviews that can either have a defined start and finish (i.e. checkout process) or just a finish (order success). Select an existing goal to prefill the form or manually enter new data. The Goal ID should follow the format goal_x. Configured goals will allow you to measure conversion rate and funnel drop of rate on the Goals Overview page. Data from this form will be stored in the lookup file WA_goals.csv</description>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>@y</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Existing goals</title>
+      <table>
+        <search>
+          <query>| inputlookup WA_goals.csv | fields goal_id site description start end</query>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <set token="form.goal_id">$row.goal_id$</set>
+          <set token="form.description">$row.description$</set>
+          <set token="form.site">$row.site$</set>
+          <set token="form.startswith">$row.start$</set>
+          <set token="form.endswith">$row.end$</set>
+        </drilldown>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Setup new goal</title>
+      <input type="dropdown" token="site" searchWhenChanged="true">
+        <label>Site</label>
+        <search>
+          <query>|inputlookup WA_settings.csv | search key=site | fields value source</query>
+        </search>
+        <fieldForLabel>value</fieldForLabel>
+        <fieldForValue>value</fieldForValue>
+      </input>
+      <input type="text" token="goal_id" searchWhenChanged="true">
+        <label>Goal ID (goal_x)</label>
+      </input>
+      <input type="text" token="description">
+        <label>Goal description</label>
+      </input>
+      <input type="dropdown" token="startswith" searchWhenChanged="true" depends="$site$">
+        <label>Start page</label>
+        <search>
+          <query>|inputlookup WA_pages.csv | search site=$site$ | sort -http_request</query>
+        </search>
+        <fieldForLabel>http_request</fieldForLabel>
+        <fieldForValue>http_request</fieldForValue>
+        <choice value="&lt;No start&gt;">&lt;No start&gt;</choice>
+        <default>&lt;No start&gt;</default>
+      </input>
+      <input type="dropdown" token="endswith" searchWhenChanged="true" depends="$site$">
+        <label>End page</label>
+        <search>
+          <query>|inputlookup WA_pages.csv | search site=$site$ | sort -http_request</query>
+        </search>
+        <fieldForLabel>http_request</fieldForLabel>
+        <fieldForValue>http_request</fieldForValue>
+      </input>
+      <table>
+        <title>Goals</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,host | eval goal_id="goal_1" | rename Web.uri AS uri |  stats dc(Web.http_session) AS Sessions, count(eval(uri="$startswith$")) AS Entries,count(eval(uri="$endswith$")) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">row</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+      <html>
+	<button class="btn" data-set-token="save_goal" data-value="show">Save goal</button>
+</html>
+      <single depends="$save_goal$">
+        <search>
+          <query>|inputlookup WA_goals | search (goal_id!="$goal_id$" OR site!="$site$") | append [search | stats count | eval goal_id="$goal_id$" | eval description="$description$" | eval site="$site$" | eval start="$startswith$" | eval end="$endswith$"] | fields goal_id description site start end | sort goal_id | outputlookup WA_goals createinapp=t | eval Response="Goal was succesfully saved." | head 1 | fields Response</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="linkView">search</option>
+      </single>
+    </panel>
+  </row>
+</form>

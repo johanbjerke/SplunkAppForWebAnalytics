@@ -1,0 +1,154 @@
+<form>
+  <label>Acquisition</label>
+  <description>Click the graphs or tables to drilldown</description>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Channels</title>
+        <search>
+          <query>| tstats summariesonly=t first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session |  stats count by http_session_channel</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <drilldown>
+          <set token="channel">$click.value$</set>
+        </drilldown>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart depends="$span$">
+        <title>Sessions</title>
+        <search>
+          <query>| tstats summariesonly=t prestats=t dc(Web.http_session) AS Sessions FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY _time,Web.http_session_channel $span$ | timechart usenull=f $span$ dc(Web.http_session) AS Sessions by Web.http_session_channel</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Aquisition by Channel</title>
+        <search>
+          <query>| tstats summariesonly=t first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | top http_session_channel countfield=Sessions percentfield="% Sessions"  |  eval "% Sessions"=round('% Sessions',2) | eval "% Sessions"='% Sessions'."%" | rename http_session_channel as Channel | addcoltotals labelfield=Channel</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <drilldown>
+          <set token="channel">$click.value$</set>
+        </drilldown>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Behaviour by Channel</title>
+        <search>
+          <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews,max(Web.http_session_duration) AS http_session_duration,first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces,avg(http_session_pageviews) AS "Pages/Session", avg(http_session_duration) AS "Avg. Session Duration", count AS Sessions, sum(http_session_pageviews) AS Pageviews, sum(Duration) AS Duration by http_session_channel | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields http_session_channel Bouncerate "Pages/Session" "Avg. Session Duration" Sessions Pageviews Duration Bounces NonBounces | eval Bouncerate=Bouncerate."%" | rename http_session_channel as "Channel" | eval "Pages/Session"=round('Pages/Session',2) | eval "Avg. Session Duration"=round('Avg. Session Duration',2) | appendpipe [stats sum(Sessions) AS Sessions, sum(Pageviews) as Pageviews, sum(Duration) as Duration, sum(Bounces) as Bounces, sum(NonBounces) as NonBounces |  eval "Pages/Session"=round(Pageviews/Sessions,2) | eval "Avg. Session Duration"=round(Duration/Sessions,2)|  eval Bouncerate=round(100*(Bounces/NonBounces),2)."%" ] | fields - Sessions Pageviews Duration Bounces NonBounces</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <drilldown>
+          <set token="channel">$click.value$</set>
+        </drilldown>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$channel$">
+      <table>
+        <title>Drilldown by $channel$</title>
+        <search>
+          <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews,max(Web.http_session_duration) AS http_session_duration,first(Web.http_session_referrer_domain) AS http_session_referrer_domain FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview Web.http_session_channel="$channel$" GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces,avg(http_session_pageviews) AS "Pages/Session", avg(http_session_duration) AS "Avg. Session Duration", count AS Sessions, sum(http_session_pageviews) AS Pageviews, sum(http_session_duration) AS Duration by http_session_referrer_domain | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields http_session_referrer_domain Sessions Pageviews Bouncerate "Pages/Session" "Avg. Session Duration" Duration Bounces NonBounces | eval Bouncerate=Bouncerate."%" | rename http_session_referrer_domain as "Referer" | eval "Pages/Session"=round('Pages/Session',2) | eval "Avg. Session Duration"=round('Avg. Session Duration',2) | appendpipe [stats sum(Sessions) AS Sessions, sum(Pageviews) as Pageviews, sum(Duration) as Duration, sum(Bounces) as Bounces, sum(NonBounces) as NonBounces |  eval "Pages/Session"=round(Pageviews/Sessions,2) | eval "Avg. Session Duration"=round(Duration/Sessions,2)|  eval Bouncerate=round(100*(Bounces/NonBounces),2)."%"  | eval Referer="Total for site"] | fields - Duration Bounces NonBounces | sort -Sessions</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>

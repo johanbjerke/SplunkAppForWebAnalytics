@@ -1,0 +1,92 @@
+<form>
+  <label>Traffic Search</label>
+  <description>This panel provides an easy to use form to perform searches against the data model. Use it to pivot data around specific metrics and attributes. The resulting search can then be saved to your own dashboard.</description>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="metric" searchWhenChanged="true">
+      <label>Metric</label>
+      <choice value="avg(Web.bytes)">Average Volume (bytes)</choice>
+      <choice value="sum(Web.bytes)">Sum of Volume (bytes)</choice>
+      <choice value="count(Web.bytes)">Count of Requests</choice>
+    </input>
+    <input type="dropdown" token="attribute" searchWhenChanged="true">
+      <label>Attribute</label>
+      <choice value="Web.clientip">clientip</choice>
+      <choice value="Web.http_channel">http_channel</choice>
+      <choice value="Web.http_referer">http_referer</choice>
+      <choice value="Web.status">status</choice>
+      <choice value="Web.ua_bot">ua_bot</choice>
+      <choice value="Web.ua_device">ua_device</choice>
+      <choice value="Web.ua_family">ua_family</choice>
+      <choice value="Web.ua_major">ua_major</choice>
+      <choice value="Web.ua_minor">ua-_minor</choice>
+      <choice value="Web.ua_mobile">ua_mobile</choice>
+      <choice value="Web.ua_os_family">ua_os_family</choice>
+      <choice value="Web.ua_os_major">ua_os_major</choice>
+      <choice value="Web.ua_os_minor">ua_os_minor</choice>
+      <choice value="Web.ua_os_patch">ua_os_patch</choice>
+      <choice value="Web.ua_os_patch_minor">ua_os_patch_minor</choice>
+      <choice value="Web.ua_patch">ua_patch</choice>
+      <choice value="Web.uri">uri</choice>
+      <choice value="Web.user">user</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Analyzer</title>
+        <search>
+          <query>| tstats summariesonly=t  prestats=t $metric$ FROM datamodel=Web WHERE Web.site="$site$" GROUPBY "$attribute$" _time $span$ |  timechart $span$ $metric$ by "$attribute$"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+</form>

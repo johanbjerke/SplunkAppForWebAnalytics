@@ -1,0 +1,385 @@
+[app/ui]
+version = 6.2.0
+modtime = 1418908524.763795000
+
+[app/launcher]
+version = 6.2.0
+modtime = 1418908524.767355000
+
+[indexes/test]
+owner = admin
+version = 6.2.0
+modtime = 1420460741.003130000
+
+[lookups/WA_Settings]
+version = 6.2.0
+modtime = 1427394694.815554000
+
+[transforms/channels]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1420641434.261768000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/EVAL-http_channel_direct]
+access = read : [ * ], write : [ * ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1420642956.339488000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/LOOKUP-Channels]
+version = 6.2.0
+modtime = 1420645267.450419000
+
+[lookups/channels.csv]
+version = 6.2.0
+modtime = 1420720275.583749000
+
+[views/audience]
+version = 6.2.1
+modtime = 1438934336.495454000
+
+[nav/default]
+version = 6.2.1
+modtime = 1438952780.007081000
+
+[views/aquisition]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.4
+modtime = 1439216738.101299000
+
+[views/behaviour]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.1
+modtime = 1438934367.201308000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/LOOKUP-sessions]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1420798498.300954000
+
+[macros/channel]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.0
+modtime = 1420804734.845068000
+
+[views/goals]
+owner = admin
+version = 6.2.0
+modtime = 1421431424.850927000
+
+[views/goals_overview]
+owner = admin
+version = 6.2.1
+modtime = 1438934407.622629000
+
+[views/goals_setup]
+version = 6.2.0
+modtime = 1432734435.850759000
+
+[views/realtime]
+owner = admin
+version = 6.2.1
+modtime = 1438945702.922942000
+
+[panels/audience_sessions]
+owner = admin
+version = 6.2.0
+modtime = 1421772428.898868000
+
+[savedsearches/Generate%20user%20sessions%20-%20scheduled]
+version = 6.2.1
+modtime = 1439208368.867705000
+
+[transforms/WA_goals]
+access = read : [ * ], write : [ admin, splunk-system-role ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1422386312.946176000
+
+[tags/eventtype%3Dweb-traffic]
+access = read : [ * ], write : [ admin, splunk-system-role ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1422386280.977345000
+
+[datamodels/Web_WA]
+access = read : [ * ], write : [ admin, splunk-system-role ]
+export = none
+owner = admin
+version = 6.2.0
+modtime = 1422469302.723525000
+
+[models/Web_WA]
+access = read : [ * ], write : [ admin, splunk-system-role ]
+export = none
+owner = admin
+version = 6.2.0
+modtime = 1422469302.738142000
+
+[savedsearches/Generate%20user%20sessions]
+version = 6.2.1
+modtime = 1439206528.691845000
+
+[savedsearches/Generate%20pages]
+version = 6.2.0
+modtime = 1427479124.272340000
+
+[datamodels/Web]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.4
+modtime = 1439216646.626087000
+
+[models/Web]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.4
+modtime = 1439216605.865952000
+
+[props/default/EXTRACT-http_locale]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427401566.643062000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/EXTRACT-http_request%2Chttp_referer%2Chttp_user_agent]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427401584.660313000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/EXTRACT-http_request]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427401588.880002000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/EXTRACT-http_method]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427401592.922144000
+
+[savedsearches/Generatae%20pages%20-%20Scheduled]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.0
+modtime = 1427454259.202466000
+
+[transforms/WA_settings]
+version = 6.2.0
+modtime = 1431086406.984124000
+
+[transforms/WA_channels]
+version = 6.2.0
+modtime = 1427477826.848544000
+
+[props/default/LOOKUP-0_sessions]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427478235.672866000
+
+[props/default/LOOKUP-1_Channels]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427478240.043688000
+
+[props/default/LOOKUP-2_Channels]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427478244.932768000
+
+[props/default/LOOKUP-site]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.0
+modtime = 1427478249.667193000
+
+[lookups/WA_settings.csv]
+version = 6.2.0
+modtime = 1427479048.419443000
+
+[savedsearches/Generate%20pages%20-%20scheduled]
+version = 6.2.0
+modtime = 1433521853.784557000
+
+[views/sites_setup]
+version = 6.2.4
+modtime = 1440143861.140517000
+
+[inputs/monitor%3A%2F%2F%24SPLUNK_HOME%2Fetc%2Fapps%2FSplunkAppForWebAnalytics%2Fsampledata%2Fiis.log]
+version = 6.2.0
+modtime = 1430320027.455597000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2Fexternal%2Fasl%2F2015-05-06]
+owner = admin
+version = 6.2.0
+modtime = 1430989781.711062000
+
+[eventtypes/non-pageview]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 6.2.0
+modtime = 1431008588.737407000
+
+[views/traffic]
+owner = admin
+version = 6.2.0
+modtime = 1431075901.066502000
+
+[views/traffic_center]
+owner = admin
+version = 6.2.1
+modtime = 1438934379.357899000
+
+[views/traffic_search]
+version = 6.2.1
+modtime = 1438945900.858565000
+
+[transforms/WA_sessions]
+version = 6.2.0
+modtime = 1431086376.187500000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2Fexternal%2Fasl%2F2015-05-26]
+owner = admin
+version = 6.2.0
+modtime = 1432668428.339775000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2Fexternal%2Fasl%2F2015-05-28%2Fallstarlanes.co.uk-access-03062015.log]
+version = 6.2.0
+modtime = 1435856583.962020000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2Fexternal%2Fasl%2F2015-05-28%2Fallstarlanes.co.uk-access-06062015-%2A]
+version = 6.2.0
+modtime = 1433609684.625047000
+
+[views/documentation]
+version = 6.2.1
+modtime = 1436803906.026346000
+
+[datamodels/Splunk_Audit]
+access = read : [ * ], write : [ admin, power ]
+export = system
+owner = nobody
+version = 6.2.0
+modtime = 1435856014.099614000
+
+[models/Splunk_Audit]
+access = read : [ * ], write : [ admin, power ]
+export = system
+owner = nobody
+version = 6.2.0
+modtime = 1435856014.105372000
+
+[views/analytics_center]
+owner = admin
+version = 6.2.1
+modtime = 1438934320.703142000
+
+[macros/analytics%281%29]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.1
+modtime = 1435921702.182335000
+
+[app/install/install_source_checksum]
+version = 6.2.1
+modtime = 1435957323.289457000
+
+[props/%28%3F%3A%3A%29%7B0%7Daccess_comb%2A/EVAL-http_referer_domain]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.1
+modtime = 1438091091.080637000
+
+[props/default/EVAL-http_channel]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.1
+modtime = 1438091095.369765000
+
+[props/default/EVAL-http_referer_domain]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.1
+modtime = 1438091099.820625000
+
+[props/default/EVAL-http_referer_hostname]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.1
+modtime = 1438091105.436685000
+
+[props/default/EVAL-user]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 6.2.1
+modtime = 1438091109.936201000
+
+[views/data_model_audit]
+owner = admin
+version = 6.2.1
+modtime = 1439201034.801911000
+
+[savedsearches/Data%20Model%20Acceleration%20Details]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.4
+modtime = 1439216205.459302000
+
+[savedsearches/Top%20Accelerations%20By%20Size]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.4
+modtime = 1439216216.109353000
+
+[savedsearches/Top%20Accelerations%20by%20Complete%20Status]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.2.4
+modtime = 1439216221.373890000
+
+[views/viz_sankey]
+version = 6.2.4
+modtime = 1439225181.126842000
+
+[views/user_journey_flow]
+version = 6.2.4
+modtime = 1440103891.332565000

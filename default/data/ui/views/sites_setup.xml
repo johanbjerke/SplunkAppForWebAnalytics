@@ -1,0 +1,83 @@
+<form script="tokenlinks.js,table_icons_inline_site_check.js" stylesheet="table_decorations.css,setup.css">
+  <label>Websites</label>
+  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv</description>
+  <row>
+    <panel>
+      <title>Configured websites (Click to fill setup form)</title>
+      <table>
+        <search>
+          <query>| inputlookup WA_settings.csv | search key=site | fields value host source | rename value AS Site, host AS Host, source as Source</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <set token="form.value">$row.Site$</set>
+          <set token="form.host">$row.Host$</set>
+          <set token="form.source">$row.Source$</set>
+        </drilldown>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">5</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Available host and source combinations (Click to fill setup form)</title>
+      <input type="text" token="filter" searchWhenChanged="true">
+        <label>Filter</label>
+        <default>*</default>
+      </input>
+      <html>
+      	<p class="table_description">Verify that all applicable host and source combinations has a green checkmark in the "Configured" column.</p>
+      </html>
+      <table id="available_sources_table" depends="$filter$">
+        <search>
+          <query>| tstats prestats=t count where index=* by host,source,sourcetype  | search [rest /services/properties/eventtypes/web-traffic/search | eval search=value] | stats count AS events by host, source | search host=*$filter$* OR source=*$filter$*  |  lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <set token="form.value"></set>
+          <set token="form.host">$row.host$</set>
+          <set token="form.source">$row.source$</set>
+        </drilldown>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">5</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Setup new website</title>
+      <input type="text" token="value" searchWhenChanged="true">
+        <label>Site (www.mydomain.com)</label>
+      </input>
+      <input type="text" token="host">
+        <label>Host (Accepts wildcard *)</label>
+      </input>
+      <input type="text" token="source" searchWhenChanged="true" id="setup_source">
+        <label>Source (Accepts wildcard *)</label>
+      </input>
+      <html>
+		<button class="btn" data-set-token="save_site" data-value="show">Save website</button>
+	</html>
+      <single depends="$save_site$">
+        <search>
+          <query>|inputlookup WA_settings.csv | search (host!="$host$" OR source!="$source$") | append [search | stats count | eval key="site"| eval value="$value$"| eval host="$host$" | eval source="$source$"] | fields key value source host | sort key value | outputlookup WA_settings.csv createinapp=t | eval Response="Site was succesfully saved." | head 1 | fields Response</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="linkView">search</option>
+      </single>
+    </panel>
+  </row>
+</form>
