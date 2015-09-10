@@ -21,7 +21,7 @@
       <label>Landing page</label>
       <choice value="*">Any</choice>
       <search>
-        <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY "Web.site","Web.http_session","Web.uri_path" | stats last("Web.uri_path") AS landing_page by "Web.http_session" | top limit=20 landing_page | eval landing_page_description=landing_page+" ("+count+")" | fields landing_page landing_page_description</query>
+        <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY "Web.site","Web.http_session","Web.uri" | stats last("Web.uri") AS landing_page by "Web.http_session" | top limit=20 landing_page | eval landing_page_description=landing_page+" ("+count+")" | fields landing_page landing_page_description</query>
         <earliest>0</earliest>
         <latest>now</latest>
       </search>
@@ -47,8 +47,8 @@
   <search id="sankey_search">
     <query>
       <![CDATA[
-| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview "Web.http_session_pageviews">1 GROUPBY "Web.site","Web.http_session",_time span=1s,"Web.http_referer","Web.uri_path","Web.http_session_channel"
-| rename Web.uri_path AS to "Web.http_referer" AS from "Web.http_session_channel" AS channel "Web.site" AS site "Web.http_session" AS http_session
+| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview "Web.http_session_pageviews">1 GROUPBY "Web.site","Web.http_session",_time span=1s,"Web.http_referer","Web.uri","Web.http_session_channel"
+| rename Web.uri AS to "Web.http_referer" AS from "Web.http_session_channel" AS channel "Web.site" AS site "Web.http_session" AS http_session
 | rex field=from "https?://.+?(?<from_path>/[^\\?]+)" 
 | rename from_path AS from
 | eval from=if(isnull(from),"/",from)

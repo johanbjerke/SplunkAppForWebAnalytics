@@ -158,18 +158,6 @@
                     "fieldSearch": ""
                 },
                 {
-                    "fieldName": "uri_path",
-                    "owner": "Web",
-                    "type": "string",
-                    "required": false,
-                    "multivalue": false,
-                    "hidden": false,
-                    "editable": true,
-                    "displayName": "uri_path",
-                    "comment": "",
-                    "fieldSearch": ""
-                },
-                {
                     "fieldName": "uri_query",
                     "owner": "Web",
                     "type": "string",
@@ -873,7 +861,7 @@
                     "comment": "",
                     "lookupInputs": [
                         {
-                            "inputField": "useragent",
+                            "inputField": "http_user_agent",
                             "lookupField": "http_user_agent"
                         }
                     ],
@@ -907,7 +895,7 @@
                             "displayName": "http_session_start",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "FirstRequest"
+                            "lookupOutputFieldName": "http_session_start"
                         },
                         {
                             "fieldName": "http_session_end",
@@ -920,7 +908,7 @@
                             "displayName": "http_session_end",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "LastRequest"
+                            "lookupOutputFieldName": "http_session_end"
                         },
                         {
                             "fieldName": "http_session_pageviews",
@@ -933,7 +921,7 @@
                             "displayName": "http_session_pageviews",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "Pageviews"
+                            "lookupOutputFieldName": "http_session_pageviews"
                         },
                         {
                             "fieldName": "http_session_duration",
@@ -946,7 +934,7 @@
                             "displayName": "http_session_duration",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "Duration"
+                            "lookupOutputFieldName": "http_session_duration"
                         },
                         {
                             "fieldName": "http_session_referrer",
@@ -1213,18 +1201,6 @@
                     "hidden": false,
                     "editable": true,
                     "displayName": "tag",
-                    "comment": "",
-                    "fieldSearch": ""
-                },
-                {
-                    "fieldName": "uri_path",
-                    "owner": "Web",
-                    "type": "string",
-                    "required": false,
-                    "multivalue": false,
-                    "hidden": false,
-                    "editable": true,
-                    "displayName": "uri_path",
                     "comment": "",
                     "fieldSearch": ""
                 },
@@ -1552,18 +1528,6 @@
                     "hidden": false,
                     "editable": true,
                     "displayName": "tag",
-                    "comment": "",
-                    "fieldSearch": ""
-                },
-                {
-                    "fieldName": "uri_path",
-                    "owner": "Web",
-                    "type": "string",
-                    "required": false,
-                    "multivalue": false,
-                    "hidden": false,
-                    "editable": true,
-                    "displayName": "uri_path",
                     "comment": "",
                     "fieldSearch": ""
                 },

@@ -90,7 +90,7 @@
       <single>
         <title>Avg. Time on Page</title>
         <search>
-          <query>| tstats summariesonly=t max(Web.http_session_duration) AS http_session_duration FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats avg(http_session_duration)  AS AvgDuration | eval AvgDuration=round(AvgDuration, 2) | fieldformat AvgDuration = strftime(AvgDuration, "%H:%M:%S")</query>
+          <query>| tstats summariesonly=t max(Web.http_session_duration) AS http_session_duration FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats avg(http_session_duration)  AS AvgDuration | eval AvgDuration=round(AvgDuration, 0) | fieldformat AvgDuration = strftime(AvgDuration, "%M:%S")</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -105,7 +105,7 @@
       <single>
         <title>Bouncerate</title>
         <search>
-          <query>| tstats summariesonly=t max(Web.Pageviews) as http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields Bouncerate | eval Bouncerate=Bouncerate."%"</query>
+          <query>| tstats summariesonly=t max(Web.http_session_pageviews) as http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields Bouncerate | eval Bouncerate=Bouncerate."%"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

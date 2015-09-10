@@ -88,7 +88,7 @@
 	                
 	                <div>
 	                    <h3>3. Run lookups</h3>
-	                    <p class="" id="3-loading">Once the data has been imported run the two lookups <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate user sessions"</a> and  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a>. These will be used throughout the app. Once run the first time, they will automatically be updated via two scheduled searches that runs every 10 minutes that adds any new data coming into the app. Running these lookup searches might take a long time depending on how much data you have in Splunk but its important you let the searches finish before you move on to the next step. If you have too much data to run these for everything you can modify the time period to something less than "All time" which is the default time period. The lookup reports can be found under Setup->Lookups or by using the links above. It's important that thes searches return results. If not, the app will not work.</p>
+	                    <p class="" id="3-loading">Once the data has been imported run the two lookups <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate user sessions"</a> and  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a>. These will be used throughout the app. Once run the first time, they will automatically be updated via two scheduled searches that runs every 10 minutes that adds any new data coming into the app. Running these lookup searches might take a long time depending on how much data you have in Splunk but its important you let the searches finish before you move on to the next step. If you have too much data to run these, you can modify the time period to something less than "All time" which is the default time period. The lookup reports can be found under Setup->Lookups or by using the links above. It's important that these searches return results. If not, the app will not work.</p>
 	                </div>
 	    	</html>
 	    	<table id="check_3" class="check">
@@ -100,7 +100,7 @@
 				      </search>
 			</table>
 			<html>   
-	             <p class="">Please note that the Sessions lookup might return 0 if all sessions have already been copied over to the datamodel, the Sessions lookup will only keep data indexed in the last 4 hours. If the data model is accelerated and the acceleration is complete (or almost complete) having 0 in the Session lookup is alright. </p>
+	             <p class="">Please note that the Sessions lookup might return 0 if all sessions have already been copied over to the datamodel, the Sessions lookup will only keep session data indexed in the last 24 hours. If the data model is accelerated and the acceleration is complete (or almost complete) having 0 in the Session lookup is alright. </p>
 	    	</html>
 	      	<html>         
 	                <hr/>

@@ -38,8 +38,8 @@ version = 6.2.0
 modtime = 1420720275.583749000
 
 [views/audience]
-version = 6.2.1
-modtime = 1438934336.495454000
+version = 6.2.4
+modtime = 1441913770.225217000
 
 [nav/default]
 version = 6.2.1
@@ -142,7 +142,7 @@ access = read : [ * ], write : [ admin, power ]
 export = none
 owner = nobody
 version = 6.2.4
-modtime = 1439216646.626087000
+modtime = 1441919276.833833000
 
 [models/Web]
 access = read : [ * ], write : [ admin, power ]
@@ -383,3 +383,21 @@ modtime = 1439225181.126842000
 [views/user_journey_flow]
 version = 6.2.4
 modtime = 1440103891.332565000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2FWisconsin%20IIS]
+owner = admin
+version = 6.2.4
+modtime = 1441206583.657968000
+
+[inputs/monitor%3A%2F%2F%24SPLUNK_HOME%2Fetc%2Fapps%2FSplunkAppForWebAnalytics%2Fsampledata%2Fapache.log]
+version = 6.2.4
+modtime = 1441919025.346392000
+
+[views/behaviour_overview]
+version = 6.2.4
+modtime = 1441913868.387175000
+
+[inputs/monitor%3A%2F%2F%2FUsers%2Fjbjerke%2FDocuments%2FSplunk%2FData%2Fweb%2FWisconsin%20IIS%2Fptaweb.wi.gov_1637_u_ex150803.zip]
+owner = admin
+version = 6.2.4
+modtime = 1441919065.066114000
