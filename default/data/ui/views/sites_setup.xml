@@ -1,6 +1,9 @@
 <form script="tokenlinks.js,table_icons_inline_site_check.js" stylesheet="table_decorations.css,setup.css">
   <label>Websites</label>
   <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv</description>
+  <search id="createlookup">
+          <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
+  </search>
   <row>
     <panel>
       <title>Configured websites (Click to fill setup form)</title>
@@ -10,7 +13,7 @@
           <earliest>0</earliest>
           <latest></latest>
         </search>
-        <option name="wrap">undefined</option>
+        <option name="wrap">true</option>
         <option name="rowNumbers">true</option>
         <option name="drilldown">row</option>
         <drilldown>
@@ -33,7 +36,7 @@
       </html>
       <table id="available_sources_table" depends="$filter$">
         <search>
-          <query>| tstats prestats=t count where index=* by host,source,sourcetype  | search [rest /services/properties/eventtypes/web-traffic/search | eval search=value] | stats count AS events by host, source | search host=*$filter$* OR source=*$filter$*  |  lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
+          <query>| metasearch | search [rest /services/properties/eventtypes/web-traffic/search | eval search=value] | stats count AS events by host, source | search host=*** OR source=***   | lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>

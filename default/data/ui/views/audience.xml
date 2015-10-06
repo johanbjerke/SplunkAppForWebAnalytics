@@ -62,6 +62,11 @@
       </chart>
     </panel>
   </row>
+  <search id="base1">
+          <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+  </search>
   <row>
     <panel>
       <single>
@@ -90,10 +95,8 @@
     <panel>
       <single>
         <title>Pages / Session</title>
-        <search>
-          <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats dc(Web.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews | eval "Pages / Session"=Pageviews/Sessions | eval "Pages / Session"=round('Pages / Session',2) | fields "Pages / Session"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| stats dc(Web.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews | eval "Pages / Session"=Pageviews/Sessions | eval "Pages / Session"=round('Pages / Session',2) | fields "Pages / Session"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="linkView">search</option>
@@ -116,10 +119,8 @@
     <panel>
       <single>
         <title>Bouncerate</title>
-        <search>
-          <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields Bouncerate | eval Bouncerate=Bouncerate."%"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields Bouncerate | eval Bouncerate=Bouncerate."%"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="linkView">search</option>
@@ -210,14 +211,17 @@
       </chart>
     </panel>
   </row>
+   <search id="base2">
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.clientip | iplocation Web.clientip </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+   </search>
   <row>
     <panel>
       <table>
         <title>Top Countries</title>
-        <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.clientip | iplocation Web.clientip | fields Country Web.http_session | dedup Web.http_session | top Country countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base2">
+          <query>| fields Country Web.http_session | dedup Web.http_session | top Country countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions"</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">true</option>
@@ -229,10 +233,8 @@
     <panel>
       <table>
         <title>Top Cities</title>
-        <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.clientip | iplocation Web.clientip | fields City Web.http_session | dedup Web.http_session | top City countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" |  replace "" with "(not set)" in City</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base2">
+          <query>| fields City Web.http_session | dedup Web.http_session | top City countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" |  replace "" with "(not set)" in City</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">true</option>
@@ -278,10 +280,8 @@
     <panel>
       <map>
         <title>Location</title>
-        <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.clientip | iplocation Web.clientip | geostats dc(Web.http_session) AS Sessions</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base2">
+          <query>| geostats dc(Web.http_session) AS Sessions</query>
         </search>
         <option name="mapping.data.maxClusters">100</option>
         <option name="mapping.drilldown">all</option>

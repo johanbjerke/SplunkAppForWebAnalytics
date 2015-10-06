@@ -29,14 +29,17 @@
       <default>*</default>
     </input>
   </fieldset>
+  <search id="base1">
+          <query>| tstats summariesonly=t first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+  </search>
   <row>
     <panel>
       <chart>
         <title>Top Channels</title>
-        <search>
-          <query>| tstats summariesonly=t first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session |  stats count by http_session_channel</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>|  stats count by http_session_channel</query>
         </search>
         <drilldown>
           <set token="channel">$click.value$</set>
@@ -100,10 +103,8 @@
     <panel>
       <table>
         <title>Aquisition by Channel</title>
-        <search>
-          <query>| tstats summariesonly=t first(Web.http_session_channel) AS http_session_channel FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | top http_session_channel countfield=Sessions percentfield="% Sessions"  |  eval "% Sessions"=round('% Sessions',2) | eval "% Sessions"='% Sessions'."%" | rename http_session_channel as Channel | addcoltotals labelfield=Channel</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| top http_session_channel countfield=Sessions percentfield="% Sessions"  |  eval "% Sessions"=round('% Sessions',2) | eval "% Sessions"='% Sessions'."%" | rename http_session_channel as Channel | addcoltotals labelfield=Channel</query>
         </search>
         <drilldown>
           <set token="channel">$click.value$</set>

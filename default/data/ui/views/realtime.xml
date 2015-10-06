@@ -103,7 +103,7 @@
       <table>
         <title>Top Referals</title>
         <search>
-          <query>site="$site$"`channel`  |  stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user |  stats count AS Users by http_referer_domain | fields http_referer_domain Users | rename http_referer_domain as "Referer"  | appendpipe [stats sum(Users) AS Users| eval Referer="Total for site"] |  sort -Users</query>
+          <query>eventtype=pageview site="$site$" `channel`  |  stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user |  stats count AS Users by http_referer_domain | fields http_referer_domain Users | rename http_referer_domain as "Referer"  | appendpipe [stats sum(Users) AS Users| eval Referer="Total for site"] |  sort -Users</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -118,7 +118,7 @@
       <table>
         <title>Top Active Pages</title>
         <search>
-          <query>site="$site$"eventtype=pageview  user=*  | stats list(http_request) AS http_request by user | top http_request countfield="Users"| rename http_request AS Page | fields - percent</query>
+          <query>eventtype=pageview site="$site$" user=*  | stats list(http_request) AS http_request by user | top http_request countfield="Users"| rename http_request AS Page | fields - percent</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -135,7 +135,7 @@
       <map>
         <title>Top Locations</title>
         <search>
-          <query>site="$site$"eventtype=pageview  user=*  | iplocation clientip | geostats count</query>
+          <query>eventtype=pageview site="$site$" user=*  | iplocation clientip | geostats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

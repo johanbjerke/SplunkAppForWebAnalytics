@@ -49,23 +49,13 @@
       <input type="text" token="description">
         <label>Goal description</label>
       </input>
-      <input type="dropdown" token="startswith" searchWhenChanged="true" depends="$site$">
+      <input type="text" token="startswith" searchWhenChanged="true" depends="$site$">
         <label>Start page</label>
-        <search>
-          <query>|inputlookup WA_pages.csv | search site=$site$ | sort -http_request</query>
-        </search>
-        <fieldForLabel>http_request</fieldForLabel>
-        <fieldForValue>http_request</fieldForValue>
-        <choice value="&lt;No start&gt;">&lt;No start&gt;</choice>
         <default>&lt;No start&gt;</default>
       </input>
-      <input type="dropdown" token="endswith" searchWhenChanged="true" depends="$site$">
+      <input type="text" token="endswith" searchWhenChanged="true" depends="$site$">
         <label>End page</label>
-        <search>
-          <query>|inputlookup WA_pages.csv | search site=$site$ | sort -http_request</query>
-        </search>
-        <fieldForLabel>http_request</fieldForLabel>
-        <fieldForValue>http_request</fieldForValue>
+        <default>Goal success end path</default>
       </input>
       <table>
         <title>Goals</title>
