@@ -1,9 +1,19 @@
 <dashboard script="setup.js,table_icons_inline_config_check.js" 
            stylesheet="setup.css,table_decorations.css">
     <label>Documentation</label>
+      <search id="createlookup_settings">
+          <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
+  </search>
+    <search id="createlookup_pages">
+          <query>| outputlookup WA_pages.csv createinapp=t append=t</query>
+  </search>
+  <search id="createlookup_sessions">
+          <query>| outputlookup WA_sessions.csv createinapp=t append=t</query>
+  </search>
       <row>
     	<panel>
 	        <html>
+	        	<h2>Installation instructions</h2>
 	                <input id="_key" type="hidden"></input>
 	
 					<div>
@@ -35,7 +45,7 @@
 	                   	</p>
 	                   	<p>
 	                   		<h4>No wildcards</h4>
-	                   	<table>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Host</th>
@@ -56,7 +66,7 @@
 	                  <br />
 	                  <p>
 	                   <h4>With wildcards</h4>
-	                   	<table>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Host</th>
@@ -88,7 +98,8 @@
 	                
 	                <div>
 	                    <h3>3. Run lookups</h3>
-	                    <p class="" id="3-loading">Once the data has been imported run the two lookups <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate user sessions"</a> and  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a>. These will be used throughout the app. Once run the first time, they will automatically be updated via two scheduled searches that runs every 10 minutes that adds any new data coming into the app. Running these lookup searches might take a long time depending on how much data you have in Splunk but its important you let the searches finish before you move on to the next step. If you have too much data to run these, you can modify the time period to something less than "All time" which is the default time period. The lookup reports can be found under Setup->Lookups or by using the links above. It's important that these searches return results. If not, the app will not work.</p>
+	                    <p class="" id="3-loading">Once the data has been imported run the two lookups <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate user sessions"</a> and  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a>. These will be used throughout the app. Once run the first time, they will automatically be updated via two scheduled searches that runs every 10 minutes that adds any new data coming into the app. Running these lookup searches might take a <b>very long time</b> depending on how much data you have in Splunk but it's important you let the searches finish before you move on to the next step. If you have too much data to run these, you can modify the time period to something less than "All time" which is the default time period. The lookup reports can be found under Setup->Lookups or by using the links above. It's important that these searches return results. If not, the app will not work.</p>
+	                	<p>For long running lookup generation searches it's recommended you select "Send Job to Background" under the Job menu in the search interface. You can see if the search is complete by looking at Activity->Jobs in the menu or by configuring Splunk to send you an email once the job is done. </p>
 	                </div>
 	    	</html>
 	    	<table id="check_3" class="check">
@@ -148,9 +159,70 @@ eai:acl.app AS App
 	          		
 	                <div>
 	                    <h3>5. Configure goals (Optional)</h3>
-	                    <p class="" id="6-loading">If you want to monitor certain browsing paths or pageviews you can configure goals. This is used if you for instance want to get conversion rates or funnel abandonment rates. You can find the <a href="goals_setup?form.field1.earliest=%40y&amp;form.field1.latest=now&amp;form.startswith=&lt;No%20start&gt;&amp;earliest=0&amp;latest=" target="_blank">Goals setup page here.</a>   </p>
+	                    <p class="" id="6-loading">If you want to monitor certain browsing paths or pageviews you can configure goals. This is used if you for instance want to get conversion rates or funnel abandonment rates. You can find the <a href="goals_setup?form.field1.earliest=%40y&amp;form.field1.latest=now&amp;form.startswith=&lt;No%20start&gt;&amp;earliest=0&amp;latest=" target="_blank">Goals setup page here.</a>   
+	                                       </p>
+	                    
+	                    <p>
+	                   <h4>Example goal configuration for the checkout process of a Magento eCommerce website</h4>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Goal ID</th>
+	                   			<th>Goal description</th>
+	                   			<th>Start page</th>
+	                   			<th>End page</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>goal_1</td>
+	                   			<td>Web checkout</td>
+	                   			<td>*/checkout/onepage/</td>
+	                   			<td>*/checkout/success</td>
+	                   		</tr>
+	                   	</table>
+	                   </p>
+	                   <br />
+	                   <p>
+	                   <h4>Example goal configuration for the checkout process of a Woocommerce eCommerce website</h4>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Goal ID</th>
+	                   			<th>Goal description</th>
+	                   			<th>Start page</th>
+	                   			<th>End page</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>goal_1</td>
+	                   			<td>Web checkout</td>
+	                   			<td>No Start</td>
+	                   			<td>*/checkout/order-received/</td>
+	                   		</tr>
+	                   	</table>
+	                   </p>
+	                   <br />
+	                    
+	                    <p>The goals are stored in a summary index called "goal_summary". </p>
+	                    <p>When enabling goals, the app will start monitor goal completions from the time you save the goal. To backfill goals there is a search called "Generate Goal summary - Backfill" which can be found under the Goals menu. Please note that running this search multiple times will mean the goal completions will be duplicated. To reset the goals you need to clean the "goal_summary" index.  
+	                    </p>
+	                    
 	                </div>
 	      	</html>
+	      	<html>        
+	                  <hr/>
+	                
+	                 <div>
+	                    <h2>Upgrade instructions</h2>
+	                    <ol>
+							<li>Install app - Select "Upgrade App" checkbox.</li>
+							<li>Disable Data Model acceleration for data model "Web".</li>
+							<li>Run the "Generate user sessions" search.</li>
+							<li>Once the session generation search is complete. Re-enable data model acceleration on the Data Models configuration page.</li>
+							<li>Expand data model "Web" by clicking on the arrow on the left hand side. Click "Rebuild".</li>
+						</ol>
+	                </div>
+	        </html>
 	      	<html>        
 	                  <hr/>
 	                
@@ -167,6 +239,7 @@ eai:acl.app AS App
 	                	
 	                </div>
 	        </html>
+	      	
         </panel>
     </row>
 </dashboard>

@@ -1,7 +1,7 @@
 <form script="tokenlinks.js,table_icons_inline_site_check.js" stylesheet="table_decorations.css,setup.css">
   <label>Websites</label>
   <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv</description>
-  <search id="createlookup">
+  <search id="createlookup_settings">
           <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
   </search>
   <row>

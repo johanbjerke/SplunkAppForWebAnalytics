@@ -14,6 +14,7 @@
   <collection label="Goals">
     <view name="goals_overview" />
     <view name="goals_setup" />
+    <saved name="Generate Goal summary - Backfill"/>
   </collection>
   <a href="/app/SplunkAppForWebAnalytics/pivot?earliest=0&amp;q=%7C%20pivot%20Web%20Web%20count(Web)%20AS%20%22Count%20of%20Web%22%20ROWSUMMARY%200%20COLSUMMARY%200%20NUMCOLS%200%20SHOWOTHER%201">Pivot</a>
     

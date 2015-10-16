@@ -278,6 +278,18 @@
                     "fieldSearch": ""
                 },
                 {
+                    "fieldName": "user",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
                     "fieldName": "_time",
                     "owner": "BaseEvent",
                     "type": "timestamp",
@@ -546,28 +558,6 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "len(http_user_agent)"
-                },
-                {
-                    "outputFields": [
-                        {
-                            "fieldName": "user",
-                            "owner": "Web",
-                            "type": "string",
-                            "required": false,
-                            "multivalue": false,
-                            "hidden": false,
-                            "editable": true,
-                            "displayName": "user",
-                            "comment": "",
-                            "fieldSearch": ""
-                        }
-                    ],
-                    "calculationID": "Web_fillnull_user",
-                    "owner": "Web",
-                    "editable": true,
-                    "comment": "",
-                    "calculationType": "Eval",
-                    "expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
                 },
                 {
                     "outputFields": [
@@ -947,7 +937,7 @@
                             "displayName": "http_session_referrer",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "http_referer"
+                            "lookupOutputFieldName": "http_session_referrer"
                         },
                         {
                             "fieldName": "http_session_referrer_domain",
@@ -960,7 +950,7 @@
                             "displayName": "http_session_referrer_domain",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "http_referer_domain"
+                            "lookupOutputFieldName": "http_session_referrer_domain"
                         },
                         {
                             "fieldName": "http_session_referrer_hostname",
@@ -973,7 +963,7 @@
                             "displayName": "http_session_referrer_hostname",
                             "comment": "",
                             "fieldSearch": "",
-                            "lookupOutputFieldName": "http_referer_hostname"
+                            "lookupOutputFieldName": "http_session_referrer_hostname"
                         },
                         {
                             "fieldName": "http_session_channel",
@@ -993,6 +983,10 @@
                     "lookupName": "WA_sessions",
                     "comment": "",
                     "lookupInputs": [
+                        {
+                            "inputField": "site",
+                            "lookupField": "site"
+                        },
                         {
                             "inputField": "user",
                             "lookupField": "user"
@@ -1325,6 +1319,18 @@
                     "fieldSearch": ""
                 },
                 {
+                    "fieldName": "user",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
                     "fieldName": "_time",
                     "owner": "BaseEvent",
                     "type": "timestamp",
@@ -1648,6 +1654,18 @@
                     "hidden": false,
                     "editable": true,
                     "displayName": "cached",
+                    "comment": "",
+                    "fieldSearch": ""
+                },
+                {
+                    "fieldName": "user",
+                    "owner": "Web",
+                    "type": "string",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "user",
                     "comment": "",
                     "fieldSearch": ""
                 },

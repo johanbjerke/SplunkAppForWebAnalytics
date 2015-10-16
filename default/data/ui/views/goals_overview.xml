@@ -33,7 +33,10 @@
       <single depends="$site$">
         <title>Goal 1 - Conversion Rate</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_1" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <query>index=goal_summary site="$site$" goal_id="goal_1"
+| stats sum(Sessions) AS Sessions, sum(Completed) AS Completed
+| eval ConversionRate=round(if(isnull(Completed/Sessions),0,100*(Completed/Sessions)),2)."%"
+| fields ConversionRate</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -45,7 +48,10 @@
       <single depends="$site$">
         <title>Goal 2 - Conversion Rate</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_2" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <query>index=goal_summary site="$site$" goal_id="goal_2"
+| stats sum(Sessions) AS Sessions, sum(Completed) AS Completed
+| eval ConversionRate=round(if(isnull(Completed/Sessions),0,100*(Completed/Sessions)),2)."%"
+| fields ConversionRate</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -57,7 +63,10 @@
       <single depends="$site$">
         <title>Goal 3 - Conversion Rate</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.uri,Web.site | eval goal_id="goal_3" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | stats dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%" | eval CompletionRate=round(100*(Completed/Entries),2)."%" | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%" | fields "Conversion Rate"</query>
+          <query>index=goal_summary site="$site$" goal_id="goal_3"
+| stats sum(Sessions) AS Sessions, sum(Completed) AS Completed
+| eval ConversionRate=round(if(isnull(Completed/Sessions),0,100*(Completed/Sessions)),2)."%"
+| fields ConversionRate</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -80,7 +89,7 @@
       <chart>
         <title>$goal$ - Over Time</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY _time $span$, Web.http_session,Web.uri,Web.site | eval goal_id="$goal$" | rename Web.uri AS uri | lookup WA_goals site AS Web.site goal_id AS goal_id OUTPUT start as goal_start end as goal_end | timechart  $span$ dc(Web.http_session) AS Sessions, count(eval(uri=goal_start)) AS Entries,count(eval(uri=goal_end)) AS Completed | eval "Conversion Rate"=round(100*(Completed/Sessions),2) | eval CompletionRate=round(100*(Completed/Entries),2) | fields _time Completed "Conversion Rate"</query>
+          <query>index=goal_summary site="$site$" goal_id="$goal$" | timechart  $span$ sum(Sessions) AS Sessions, sum(Entries) AS Entries,sum(Completed) AS Completed  | eval "Conversion Rate"=round(100*(Completed/Sessions),2)  | eval CompletionRate=round(100*(Completed/Entries),2)  | fields _time Completed "Conversion Rate"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -105,8 +114,6 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.axisY.maximumNumber">5</option>
-        <option name="charting.axisY.minimumNumber">0</option>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -114,6 +121,11 @@
         <option name="charting.axisTitleY.text">Conversion Rate (%)</option>
         <option name="charting.chart.overlayFields">Completed</option>
         <option name="charting.axisTitleY2.text">Completed Goals</option>
+        <option name="charting.axisY.maximumNumber">10</option>
+        <option name="charting.axisY.minimumNumber">0</option>
+        <option name="charting.axisY2.minimumNumber">0</option>
+        <option name="charting.axisLabelsY2.majorUnit">5</option>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
       </chart>
     </panel>
   </row>

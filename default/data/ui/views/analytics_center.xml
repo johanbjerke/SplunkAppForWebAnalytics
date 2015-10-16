@@ -76,7 +76,8 @@
       <title>Analytics by Dimension</title>
       <table>
         <search>
-          <query>| `analytics($attribute$,$site$)` | appendcols [| `analytics_goal($attribute$,1,$site$)`]  | appendcols [| `analytics_goal($attribute$,2,$site$)`]  | appendcols [| `analytics_goal($attribute$,3,$site$)`] | rename $attribute$ as "$attribute_label$"           | sort -Sessions</query>
+          <query>| `analytics($attribute$,$site$)` | join type=outer $attribute$  [| `analytics_goal($attribute$,1,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,2,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,3,$site$)`] | rename $attribute$ as "$attribute_label$"           | sort -Sessions
+| fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" | fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
