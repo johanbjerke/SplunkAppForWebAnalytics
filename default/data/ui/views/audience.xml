@@ -33,7 +33,7 @@
       <chart depends="$span$">
         <title>Sessions</title>
         <search>
-          <query>| tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview Web.ua_mobile!=* GROUPBY _time $span$ | timechart dc(Web.http_session) AS Non-Mobile $span$ | appendcols [| tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview Web.ua_mobile=* GROUPBY _time $span$ | timechart dc(Web.http_session) AS Mobile $span$]</query>
+          <query>| tstats summariesonly=t  count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY _time $span$,Web.http_session,Web.ua_mobile | timechart count(eval(len('Web.ua_mobile')=0)) AS Non-Mobile,sum(eval('Web.ua_mobile'!="")) AS Mobile $span$</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -179,7 +179,7 @@
       <chart>
         <title>Top Mobile Devices</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.ua_mobile | dedup Web.http_session  | top Web.ua_mobile countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename Web.ua_mobile AS "Device"</query>
+          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview  Web.ua_mobile!="" GROUPBY Web.http_session,Web.ua_mobile | dedup Web.http_session  | top Web.ua_mobile countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename Web.ua_mobile AS "Device"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

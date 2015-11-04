@@ -36,7 +36,7 @@
       </html>
       <table id="available_sources_table" depends="$filter$">
         <search>
-          <query>| metasearch | search [rest /services/properties/eventtypes/web-traffic/search | eval search=value] | stats count AS events by host, source | search host=*** OR source=***   | lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
+          <query>| metasearch | search [rest /services/properties/eventtypes/web-traffic/search splunk_server=local| eval search=value] | stats count AS events by host, source | search host=*** OR source=***   | lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>

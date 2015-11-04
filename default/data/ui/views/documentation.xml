@@ -87,7 +87,7 @@
 				      <title>Website Configuration check</title>
 				      <search>
 				          <query>
-				            | tstats prestats=t count where index=* by host,source,sourcetype  | search [rest /services/properties/eventtypes/web-traffic/search | eval search=value] | stats count AS events by host, source  |  lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Check=site | fields host source Check	
+				            | tstats prestats=t count where index=* by host,source,sourcetype  | search [rest /services/properties/eventtypes/web-traffic/search splunk_server=local | eval search=value] | stats count AS events by host, source  |  lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Check=site | fields host source Check	
 				        </query>
 				        <earliest>0</earliest>
 				        <latest>now</latest>
@@ -118,7 +118,8 @@
 	                
 	                <div>
 	                    <h3>4. Enable data model acceleration</h3>
-	                    <p class="" id="4-loading">The Splunk App for Web Analytics uses data model acceleration extensively to power the dashboards. Once the lookups in the previous step has completed you should <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">enable acceleration for the data model "Web"</a>. The data model can be found under <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Settings->Data models</a>. Set the summary range appropriately depending on how long you want to keep the data, > 1 Month. The data model is updated every 10 minutes in order for the sessions to get picked up properly. The data model acceleration needs to finish before you will see any data in any dashboard except the "Real-Time" dashboard which uses raw log data as source. That means that you initially might not see data until the data model has finished building. This could initially take up to an hour depending on how much data it is trying to build. </p>
+	                    <p class="" id="4-loading">The Splunk App for Web Analytics uses data model acceleration extensively to power the dashboards. Once the lookups in the previous step has completed you should <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">enable acceleration for the data model "Web"</a>. The data model can be found under <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Settings->Data models</a>. Set the summary range appropriately depending on how long you want to keep the data, > 1 Month. The data model is updated every 10 minutes in order for the sessions to get picked up properly. The data model acceleration needs to finish before you will see any data in any dashboard except the "Real-Time" dashboard which uses raw log data as source. That means that you initially might not see data until the data model has finished building. This could initially take many hours depending on how much data it is trying to build. </p>
+	                    <p>If Events are showing 0 after install or upgrade you might have to rebuild the data model.</p>
 	                </div>
 	     	</html>
 	     	<search ref="Data Model Acceleration Details" id="globalDMSearch"></search>
@@ -127,11 +128,11 @@
 				     <search>
 						 <query>
 						      <![CDATA[
-| rest /servicesNS/-/-/data/models
+| rest /servicesNS/-/-/data/models splunk_server=local
 | rename "acceleration.earliest_time" as Acceleration_Retention "eai:acl.app" as App "acceleration.cron_schedule" as Cron "acceleration" as Acceleration title AS Data_Model
 | table Data_Model App Acceleration Cron Acceleration_Retention updated 
 | eval Cron=if(isnull(Cron),"",Cron)
-| join App type=outer [| rest /servicesNS/nobody/SplunkAppForWebAnalytics/admin/summarization/tstats:DM_SplunkAppForWebAnalytics_Web | fields eai:acl.app summary* 
+| join App type=outer [| rest /servicesNS/nobody/SplunkAppForWebAnalytics/admin/summarization/tstats:DM_SplunkAppForWebAnalytics_Web splunk_server=local | fields eai:acl.app summary* 
 | rename summary.access_count AS "Access_Count" 
 summary.access_time AS "Last_Access"
 summary.buckets AS "Buckets"
@@ -150,6 +151,7 @@ eai:acl.app AS App
 | where like(Data_Model,"Web")
 | eval Status=if(isnull(Status),"0.00%",Status)
 | fields Acceleration Status | transpose | rename column AS Web "row 1" as Value | eval Check=Value
+| append [| tstats summariesonly=t  count AS Events FROM datamodel=Web | transpose | rename column AS Web "row 1" AS Value | eval Check=Value]
 						]]>
 						</query>
 					</search>
