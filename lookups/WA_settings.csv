@@ -1,0 +1,3 @@
+key,value,source,host
+site,"www.allstarlanes.co.uk","/Users/jbjerke/Documents/Splunk/Data/web/external/asl/*","jbjerke-mba13.splunk.local"
+site,"www.ptaweb.wi.gov","/Users/jbjerke/Documents/Splunk/Data/web/Wisconsin IIS/ptaweb.wi.gov_1637_u_ex150803.zip:./u_ex150803.log","jbjerke-mba13.splunk.local"
