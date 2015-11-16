@@ -43,7 +43,7 @@
     <panel>
       <chart>
         <search>
-          <query>|tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.$attribute$ _time $span$ | timechart $span$ dc(Web.http_session) by Web.$attribute$  | rename Web.$attribute$  AS "$attribute_label$ "</query>
+          <query>|tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.$attribute$ _time $span$ | timechart $span$ dc(Web.http_session) by Web.$attribute$  | rename Web.$attribute$  AS "$attribute_label$" | fields - VALUE</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -77,7 +77,7 @@
       <table>
         <search>
           <query>| `analytics($attribute$,$site$)` | join type=outer $attribute$  [| `analytics_goal($attribute$,1,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,2,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,3,$site$)`] | rename $attribute$ as "$attribute_label$"           | sort -Sessions
-| fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" | fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)"</query>
+| fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" | fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)" | where NOT like('$attribute_label$',"")</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
