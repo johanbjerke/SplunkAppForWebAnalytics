@@ -1,7 +1,7 @@
 <form>
   <label>Traffic Search</label>
   <description>This panel provides an easy to use form to perform searches against the data model. Use it to pivot data around specific metrics and attributes. The resulting search can then be saved to your own dashboard.</description>
-  <fieldset submitButton="false">
+  <fieldset submitButton="true">
     <input type="time" token="field1" searchWhenChanged="true">
       <label>Time period</label>
       <default>
@@ -28,11 +28,12 @@
       <choice value="*">All</choice>
       <default>*</default>
     </input>
-    <input type="dropdown" token="metric" searchWhenChanged="true">
-      <label>Metric</label>
+    <input type="dropdown" token="metric_primary" searchWhenChanged="true">
+      <label>Primary Dimension</label>
       <choice value="avg(Web.bytes)">Average Volume (bytes)</choice>
       <choice value="sum(Web.bytes)">Sum of Volume (bytes)</choice>
       <choice value="count(Web.bytes)">Count of Requests</choice>
+      <default>sum(Web.bytes)</default>
     </input>
     <input type="dropdown" token="attribute" searchWhenChanged="true">
       <label>Attribute</label>
@@ -54,14 +55,30 @@
       <choice value="Web.ua_patch">ua_patch</choice>
       <choice value="Web.uri">uri</choice>
       <choice value="Web.user">user</choice>
+      <default>Web.clientip</default>
+    </input>
+    <input type="radio" token="excludeerrors" searchWhenChanged="true">
+      <label>Show only error requests</label>
+      <choice value="400">Yes</choice>
+      <choice value="200">No</choice>
+      <default>400</default>
+      <initialValue>400</initialValue>
     </input>
   </fieldset>
   <row>
     <panel>
+      <input type="radio" token="useother" searchWhenChanged="true">
+        <label>Show only top 10</label>
+        <choice value="f">Yes</choice>
+        <choice value="t">No</choice>
+        <valuePrefix>useother=</valuePrefix>
+        <default>f</default>
+        <initialValue>f</initialValue>
+      </input>
       <chart>
         <title>Analyzer</title>
         <search>
-          <query>| tstats summariesonly=t  prestats=t $metric$ FROM datamodel=Web WHERE Web.site="$site$" GROUPBY "$attribute$" _time $span$ |  timechart $span$ $metric$ by "$attribute$"</query>
+          <query>| tstats summariesonly=t  prestats=t $metric_primary$ FROM datamodel=Web WHERE Web.status&gt;=$excludeerrors$ Web.site="$site$" GROUPBY "$attribute$" _time $span$ |  timechart useother=$useother$ $span$ $metric_primary$ by "$attribute$"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -72,9 +89,50 @@
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
-        <option name="charting.chart">line</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="metric_secondary" searchWhenChanged="true">
+        <label>Secondary Dimension</label>
+        <choice value="avg(Web.bytes)">Average Volume (bytes)</choice>
+        <choice value="sum(Web.bytes)">Sum of Volume (bytes)</choice>
+        <choice value="count(Web.bytes)">Count of Requests</choice>
+        <default>count(Web.bytes)</default>
+      </input>
+      <chart>
+        <search>
+          <query>| tstats summariesonly=t $metric_primary$ $metric_secondary$ FROM datamodel=Web WHERE Web.status&gt;=$excludeerrors$  Web.site="$site$" GROUPBY "$attribute$" | sort 10 -"$metric_primary$"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">scatter</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
@@ -86,6 +144,8 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
       </chart>
     </panel>
   </row>

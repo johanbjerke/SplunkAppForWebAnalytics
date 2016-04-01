@@ -43,12 +43,12 @@
     <panel>
       <chart>
         <search>
-          <query>|tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.$attribute$ _time $span$ | timechart $span$ dc(Web.http_session) by Web.$attribute$  | rename Web.$attribute$  AS "$attribute_label$" | fields - VALUE</query>
+          <query>|tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.$attribute$ _time $span$ | timechart $span$ dc(Web.http_session) by Web.$attribute$  | rename Web.$attribute$  AS "$attribute_label$ " | fields - VALUE</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="charting.chart">column</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -68,6 +68,8 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
       </chart>
     </panel>
   </row>
@@ -76,8 +78,7 @@
       <title>Analytics by Dimension</title>
       <table>
         <search>
-          <query>| `analytics($attribute$,$site$)` | join type=outer $attribute$  [| `analytics_goal($attribute$,1,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,2,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,3,$site$)`] | rename $attribute$ as "$attribute_label$"           | sort -Sessions
-| fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" | fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)" | where NOT like('$attribute_label$',"")</query>
+          <query>| `analytics($attribute$,$site$)` | join type=outer $attribute$  [| `analytics_goal($attribute$,1,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,2,$site$)`]  | join type=outer $attribute$  [| `analytics_goal($attribute$,3,$site$)`] | rename $attribute$ as "$attribute_label$"           | sort -Sessions | fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" | fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)" | where NOT like('$attribute_label$',"")</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

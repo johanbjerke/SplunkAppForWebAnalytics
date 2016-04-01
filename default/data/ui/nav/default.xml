@@ -10,6 +10,7 @@
 	<collection label="Traffic">
     <view name="traffic_center" />
     <view name="traffic_search" />
+    <view name="troubleshooting_center" />
   </collection>
   <collection label="Goals">
     <view name="goals_overview" />

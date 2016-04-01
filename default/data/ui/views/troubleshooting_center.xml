@@ -1,0 +1,217 @@
+<form>
+  <label>Troubleshooting Center</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+    <input type="multiselect" token="field" searchWhenChanged="true">
+      <label>Field</label>
+      <choice value="http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip">All</choice>
+      <choice value="http_user_agent">http_user_agent</choice>
+      <choice value="ua_family,Web.ua_major,Web.ua_minor">ua_browser</choice>
+      <choice value="clientip">clientip</choice>
+      <valuePrefix>Web.</valuePrefix>
+      <delimiter>,</delimiter>
+      <default>"http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip"</default>
+    </input>
+    <input type="radio" token="pageviews" searchWhenChanged="true">
+      <label>Pageviews only</label>
+      <choice value="Web.eventtype=&quot;pageview&quot;">Yes</choice>
+      <choice value="">No</choice>
+      <default>No</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <input type="dropdown" token="status_y" searchWhenChanged="true">
+        <label>Status code (Y-axis)</label>
+        <choice value="Web.status!=200">Any_Except_200</choice>
+        <choice value="Web.status&gt;=500">500s</choice>
+        <choice value="Web.status&gt;=400 Web.status&lt;500">400s</choice>
+        <choice value="Web.status&gt;=300 Web.status&lt;400">300s</choice>
+        <choice value="Web.status=500">500</choice>
+        <choice value="Web.status=404">404</choice>
+        <choice value="Web.status=200">200</choice>
+        <default>Web.status&gt;=500</default>
+        <change>
+          <set token="status_y_label">$label$</set>
+        </change>
+      </input>
+      <input type="dropdown" token="status_x" searchWhenChanged="true">
+        <label>Status code (X-axis)</label>
+        <choice value="Web.status!=200">Any_Except_200</choice>
+        <choice value="Web.status&gt;=500">500s</choice>
+        <choice value="Web.status&gt;=400 Web.status&lt;500">400s</choice>
+        <choice value="Web.status&gt;=300 Web.status&lt;400">300s</choice>
+        <choice value="Web.status=500">500</choice>
+        <choice value="Web.status=404">404</choice>
+        <choice value="Web.status=200">200</choice>
+        <default>Web.status&gt;=400 Web.status&lt;500</default>
+        <change>
+          <set token="status_x_label">$label$</set>
+        </change>
+      </input>
+      <chart>
+        <title>Problem Key-Value pairs - DM</title>
+        <search>
+          <query>
+            <![CDATA[
+|tstats summariesonly=t count FROM datamodel=Web WHERE ($status_y$) OR ($status_x$) $pageviews$ GROUPBY  Web.status,$field$ 
+| strcat "http_user_agent::" Web.http_user_agent pair_http_user_agent  
+| strcat "ua_browser::" Web.ua_family "_" Web.ua_major "." Web.ua_minor pair_ua_browser   
+| strcat "http_request::" Web.uri pair_http_request   
+| strcat "http_referer::" Web.http_referer pair_http_referer   
+| strcat "clientip::" Web.clientip pair_clientip   
+| eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip)  
+| chart sum(count) over pairs by Web.status 
+| addtotals 
+| addtotals 3* fieldname="All 300s" 
+| addtotals 4* fieldname="All 400s" 
+| addtotals 5* fieldname="All 500s" 
+| sort 100 -Total 
+| eval temp=split(pairs,"::") 
+| eval Field=mvindex(temp,0) 
+| eval Value=mvindex(temp,1) 
+| where len(Value)>0  AND NOT like(Value,"_.") 
+| fields - temp 
+| eval "$status_x_label$"=case(like("$status_x_label$","%3%"),'All 300s',like("$status_x_label$","%4%"),'All 400s',like("$status_x_label$","%5%"),'All 500s')
+| eval "$status_y_label$"=case(like("$status_y_label$","%3%"),'All 300s',like("$status_y_label$","%4%"),'All 400s',like("$status_y_label$","%5%"),'All 500s')
+| fillnull "$status_x_label$" value=0
+| fillnull "$status_y_label$" value=0
+| table pairs "$status_x_label$" "$status_y_label$" Total "All 300s" "All 400s" "All 500s" 3* 4* 5*
+]]>
+          </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bubble</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Web Errors Field-Value pairs</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.status&gt;=400 GROUPBY  Web.status,Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip | strcat "http_user_agent::" Web.http_user_agent pair_http_user_agent | strcat "ua_browser::" Web.ua_family "_" Web.ua_major "." Web.ua_minor pair_ua_browser   | strcat "clientip::" Web.clientip pair_clientip  | eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip) | chart count over pairs by Web.status | addtotals | sort 100 -Total | eval temp=split(pairs,"::") | eval Field=mvindex(temp,0)| eval Value=mvindex(temp,1) | fields - temp pairs  | table Field Value 4* 5* Total</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Web Server Client Errors (400s) by Request</title>
+        <search>
+          <query>tag=web status&gt;=400 status&lt;500  | chart count over http_request by status | addtotals | sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Web Server Errors (500s) by Request</title>
+        <search>
+          <query>tag=web status&gt;=500 | chart count over http_request by status | addtotals | sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Web Server Client Errors (400s) by Referrer</title>
+        <search>
+          <query>tag=web status&gt;=400 status&lt;500 | chart count over http_referer by status | addtotals | sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Web Server Errors (500s) by Referrer</title>
+        <search>
+          <query>tag=web status&gt;=500 | chart count over http_referer by status | addtotals | sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -33,7 +33,7 @@
       <label>Session contains page</label>
       <choice value="*">Any</choice>
       <search>
-        <query>|inputlookup WA_pages.csv | search site=$site$ | sort http_request | dedup http_request</query>
+        <query>|inputlookup WA_pages | search site=$site$ | sort http_request | dedup http_request</query>
       </search>
       <fieldForLabel>http_request</fieldForLabel>
       <fieldForValue>http_request</fieldForValue>
