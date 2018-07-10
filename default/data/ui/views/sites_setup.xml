@@ -2,31 +2,12 @@
   <label>Websites</label>
   <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv</description>
   <search id="createlookup_settings">
-          <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
+    <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
   </search>
+  <fieldset submitButton="false"></fieldset>
   <row>
     <panel>
-      <title>Configured websites (Click to fill setup form)</title>
-      <table>
-        <search>
-          <query>| inputlookup WA_settings.csv | search key=site | fields value host source | rename value AS Site, host AS Host, source as Source</query>
-          <earliest>0</earliest>
-          <latest></latest>
-        </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">true</option>
-        <option name="drilldown">row</option>
-        <drilldown>
-          <set token="form.value">$row.Site$</set>
-          <set token="form.host">$row.Host$</set>
-          <set token="form.source">$row.Source$</set>
-        </drilldown>
-        <option name="dataOverlayMode">none</option>
-        <option name="count">5</option>
-      </table>
-    </panel>
-    <panel>
-      <title>Available host and source combinations (Click to fill setup form)</title>
+      <title>1. Available host and source combinations (Click to fill setup form)</title>
       <input type="text" token="filter" searchWhenChanged="true">
         <label>Filter</label>
         <default>*</default>
@@ -36,26 +17,45 @@
       </html>
       <table id="available_sources_table" depends="$filter$">
         <search>
-          <query>| metasearch | search [rest /services/properties/eventtypes/web-traffic/search splunk_server=local| eval search=value] | stats count AS events by host, source | search host=*** OR source=***   | lookup WA_settings source AS source host AS host OUTPUTNEW value AS site | eval Configured=site | fields host source Configured site events</query>
+          <query>| metasearch
+    [ rest /services/properties/eventtypes/web-traffic/search splunk_server=local
+    | eval search=value]
+| join type=outer sourcetype
+    [ search sourcetype=iis
+        [| metadata type=sourcetypes
+        | search sourcetype=iis
+        | eval latest=lastTime, earliest=latest-180
+        | fields latest earliest
+            ]
+    | head 1
+    | rename host as host2
+    | fields sourcetype host2]
+| eval host=if(isnotnull(host2), host2, host)
+| stats count AS events by host, source
+| search host=*** OR source=***
+| lookup WA_settings source AS source host AS host OUTPUTNEW value AS site
+| eval Configured=site
+| fields host source Configured site events</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
         <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
         <drilldown>
           <set token="form.value"></set>
           <set token="form.host">$row.host$</set>
           <set token="form.source">$row.source$</set>
         </drilldown>
-        <option name="dataOverlayMode">none</option>
-        <option name="count">5</option>
       </table>
     </panel>
   </row>
   <row>
     <panel>
-      <title>Setup new website</title>
+      <title>2. Setup new website</title>
       <input type="text" token="value" searchWhenChanged="true">
         <label>Site (www.mydomain.com)</label>
       </input>
@@ -79,8 +79,29 @@
         <option name="drilldown">none</option>
         <option name="dataOverlayMode">none</option>
         <option name="count">10</option>
-        <option name="linkView">search</option>
       </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>3. Configured websites (Click to fill setup form)</title>
+      <table>
+        <search>
+          <query>| inputlookup WA_settings.csv | search key=site | fields value host source | rename value AS Site, host AS Host, source as Source</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">true</option>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <set token="form.value">$row.Site$</set>
+          <set token="form.host">$row.Host$</set>
+          <set token="form.source">$row.Source$</set>
+        </drilldown>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">5</option>
+      </table>
     </panel>
   </row>
 </form>

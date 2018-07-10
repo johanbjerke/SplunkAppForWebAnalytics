@@ -1,5 +1,21 @@
 <form>
   <label>Behaviour Overview</label>
+  <search id="TimeComparison">
+    <query>| makeresults count=1
+    | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+    |`addTimeCompareWindow`
+    </query>
+    <finalized>
+      <set token="ComparePeriodDescription">$result.ComparePeriodDescription$</set>
+    </finalized>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+  </search>
+  <search id="base1">
+    <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session</query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+  </search>
   <fieldset submitButton="false">
     <input type="time" token="field1" searchWhenChanged="true">
       <label>Time period</label>
@@ -27,13 +43,31 @@
       <choice value="*">All</choice>
       <default>*</default>
     </input>
+    <input type="dropdown" token="ImmediatePeriodCompare">
+      <label>Compare settings</label>
+      <choice value="1">Compare against period immediately before</choice>
+      <choice value="0">Compare against equivalent period in past day/week/month</choice>
+      <default>1</default>
+    </input>
   </fieldset>
   <row>
     <panel>
       <chart depends="$span$">
         <title>Pageviews</title>
         <search>
-          <query>| tstats summariesonly=t prestats=t count AS Pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY _time $span$ | timechart $span$ count AS Pageviews</query>
+          <query>| makeresults count=1
+| eval site="$site$", span="$span$"
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+| `addTimeCompareWindow`
+| map search="
+| tstats summariesonly=t count AS Count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview
+(earliest=$$earliestCompare$$ latest=$$latestCompare$$) OR (earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time $span$
+| timechart sum(Count) AS Count $span$
+| timewrap \"$$windowLength$$\"
+    | eval window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+    | fields Count window windowLength earliestCompare latestCompare info_min_time info_max_time $$FieldnameCurrentPeriod$$ $$FieldnameComparePeriod$$
+"
+| table _time Count_latest* Count*_before</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -44,7 +78,7 @@
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">line</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -58,6 +92,7 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
@@ -66,24 +101,54 @@
       <single>
         <title>Pageviews</title>
         <search>
-          <query>| tstats summariesonly=t count AS Pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview</query>
+          <query>| tstats summariesonly=t max(Web.http_session_pageviews) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats sum(max(Web.http_session_pageviews)) AS Count
+
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+| `addTimeCompareWindow`
+| eval site="$site$"
+| map search="
+| tstats summariesonly=t max(Web.http_session_pageviews) FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$ GROUPBY Web.http_session
+| stats sum(max(Web.http_session_pageviews)) AS CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+"
+| `generateTimeComparison`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
+        <option name="colorBy">trend</option>
         <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
       </single>
     </panel>
     <panel>
       <single>
         <title>Sessions</title>
         <search>
-          <query>| tstats summariesonly=t dc(Web.http_session) AS Sessions FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview</query>
+          <query>| tstats summariesonly=t dc(Web.http_session) AS Count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview
+| stats sum(Count) AS Count
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+| `addTimeCompareWindow`
+| eval site="$site$"
+| map search="
+| tstats summariesonly=t dc(Web.http_session) AS Count FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
+| stats sum(Count) AS CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+"
+| `generateTimeComparison`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
+        <option name="colorBy">trend</option>
         <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
       </single>
     </panel>
     <panel>
@@ -95,22 +160,44 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
-        <option name="dataOverlayMode">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
       </single>
     </panel>
     <panel>
       <single>
         <title>Bouncerate</title>
-        <search>
-          <query>| tstats summariesonly=t max(Web.http_session_pageviews) as http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) | fields Bouncerate | eval Bouncerate=Bouncerate."%"</query>
+        <search base="base1">
+          <query>| stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces
+| eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2)
+| eval Count=Bouncerate
+| fields Count
+
+
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+| `addTimeCompareWindow`
+| eval site="$site$"
+| map search="
+| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY Web.http_session
+| stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces
+| eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2)
+| eval CountCompare=Bouncerate
+| fields CountCompare
+
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+"
+| `generateTimeComparison`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
+        <option name="colorBy">trend</option>
         <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendColorInterpretation">inverse</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="unit">%</option>
+        <option name="useColors">1</option>
       </single>
     </panel>
   </row>
@@ -119,15 +206,32 @@
       <table>
         <title>Pages</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.uri | eventstats sum(count) as Total| eval percent = round((count/Total)*100,2) . "%"  | fields - Total| rename percent AS "% Pageviews" | addcoltotals Pageviews labelfield=Web.uri | sort -Pageviews | rename Web.uri AS Page | rename count as Pageviews | sort -Pageviews</query>
+          <query>| tstats summariesonly=t count,max(Web.http_session_duration) AS http_session_duration,min(_time) AS _time FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.uri,Web.http_session
+| rename Web.* AS *
+| sort 0 http_session -_time
+| streamstats earliest(_time) AS PageExitTime window=1 current=f by http_session
+| eval EngagementTime=PageExitTime-_time
+| stats avg(EngagementTime) AS EngagementTime, sum(count) AS count BY uri
+| rename EngagementTime AS "Engagement Time"
+| fieldformat "Engagement Time" = strftime('Engagement Time', "%M:%S")
+
+| eventstats sum(count) as Total
+| eval percent = round((count/Total)*100,2) . "%"
+| fields - Total
+| rename percent AS "% Pageviews"
+| addcoltotals Pageviews labelfield=uri
+| rename uri AS Page
+| rename count as Pageviews
+| sort 0 -Pageviews</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
       </table>
     </panel>
   </row>

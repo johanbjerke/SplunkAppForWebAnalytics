@@ -70,7 +70,6 @@
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
         <option name="drilldown">none</option>
       </single>
     </panel>
@@ -82,7 +81,6 @@
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
         <option name="drilldown">none</option>
       </single>
     </panel>
@@ -95,7 +93,6 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -109,7 +106,6 @@
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="linkView">search</option>
         <option name="drilldown">none</option>
       </single>
     </panel>

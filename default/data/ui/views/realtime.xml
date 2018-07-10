@@ -1,6 +1,6 @@
 <form>
   <label>Real-Time</label>
-  <fieldset submitbutton="false">
+  <fieldset>
     <input type="time" token="field1">
       <label></label>
       <default>
@@ -19,28 +19,29 @@
       <default>*</default>
     </input>
   </fieldset>
+  <search id="base1">
+          <query>eventtype=pageview site="$site$" | fields * </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
   <row>
     <panel>
       <single>
         <title>Right now</title>
         <search>
-          <query>eventtype=pageview site="$site$"| stats dc(user)</query>
+          <query>| stats dc(user)</query>
           <earliest>rt-1m</earliest>
           <latest>rt</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
         <option name="underLabel">active users on site in the last minute</option>
         <option name="height">100</option>
       </single>
       <chart>
-        <search>
-          <query>eventtype=pageview site="$site$"| stats dc(eval(match(eventtype,"ua-mobile*"))) AS Mobile, dc(eval(!match(eventtype,"ua-mobile*"))) AS Desktop by user | stats sum(Mobile) AS Mobile, sum(Desktop) AS Desktop | transpose |  rename "row 1" as count</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| stats dc(eval(match(eventtype,"ua-mobile*"))) AS Mobile, dc(eval(!match(eventtype,"ua-mobile*"))) AS Desktop by user | stats sum(Mobile) AS Mobile, sum(Desktop) AS Desktop | transpose |  rename "row 1" as count</query>
         </search>
         <option name="charting.chart">pie</option>
-        <option name="charting.axisY2.enabled">undefined</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -67,12 +68,9 @@
       <title>Pageviews</title>
       <chart>
         <title>Per minute</title>
-        <search>
-          <query>eventtype=pageview site="$site$"| timechart span=1m count AS Pageviews</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| timechart span=1m count AS Pageviews</query>
         </search>
-        <option name="linkView">search</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -102,8 +100,8 @@
     <panel>
       <table>
         <title>Top Referals</title>
-        <search>
-          <query>eventtype=pageview site="$site$" `channel`  |  stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user |  stats count AS Users by http_referer_domain | fields http_referer_domain Users | rename http_referer_domain as "Referer"  | appendpipe [stats sum(Users) AS Users| eval Referer="Total for site"] |  sort -Users</query>
+        <search base="base1">
+          <query>| search `channel`  |  stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user |  stats count AS Users by http_referer_domain | fields http_referer_domain Users | rename http_referer_domain as "Referer"  | appendpipe [stats sum(Users) AS Users| eval Referer="Total for site"] |  sort -Users</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -117,10 +115,8 @@
     <panel>
       <table>
         <title>Top Active Pages</title>
-        <search>
-          <query>eventtype=pageview site="$site$" user=*  | stats list(http_request) AS http_request by user | top http_request countfield="Users"| rename http_request AS Page | fields - percent</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| search user=*  | stats list(http_request) AS http_request by user | top http_request countfield="Users"| rename http_request AS Page | fields - percent</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
@@ -134,10 +130,8 @@
     <panel>
       <map>
         <title>Top Locations</title>
-        <search>
-          <query>eventtype=pageview site="$site$" user=*  | iplocation clientip | geostats count</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+        <search base="base1">
+          <query>| search user=*  | iplocation clientip | geostats count</query>
         </search>
         <option name="mapping.data.maxClusters">100</option>
         <option name="mapping.map.center">(0,0)</option>

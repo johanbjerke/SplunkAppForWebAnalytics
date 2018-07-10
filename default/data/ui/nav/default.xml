@@ -8,6 +8,7 @@
   	<view name="user_journey_flow" />
   </collection>
 	<collection label="Traffic">
+<view name="response_times" />
     <view name="traffic_center" />
     <view name="traffic_search" />
     <view name="troubleshooting_center" />
@@ -18,17 +19,17 @@
     <saved name="Generate Goal summary - Backfill"/>
   </collection>
   <a href="/app/SplunkAppForWebAnalytics/pivot?earliest=0&amp;q=%7C%20pivot%20Web%20Web%20count(Web)%20AS%20%22Count%20of%20Web%22%20ROWSUMMARY%200%20COLSUMMARY%200%20NUMCOLS%200%20SHOWOTHER%201">Pivot</a>
-    
+
   <collection label="Setup">
   <view name="documentation" />
-  <view name="sites_setup" />  
+  <view name="sites_setup" />
     <collection label="Lookups">
       <saved name="Generate user sessions"/>
       <saved name="Generate pages"/>
     </collection>
-    <view name="data_model_audit" />  
+    <view name="data_model_audit" />
   </collection>
-   
+
   <collection label="Search">
     <view name="search" default='true' />
   	<view name="data_models" />

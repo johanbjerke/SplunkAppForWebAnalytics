@@ -1,5 +1,39 @@
 <form script="SplunkAppForWebAnalytics:autodiscover.js">
   <label>User Journey Flow</label>
+  <search id="sankey_search">
+    <query>
+      <![CDATA[
+| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview "Web.http_session_pageviews">1 GROUPBY "Web.site","Web.http_session",_time span=1s,"Web.http_referer","Web.uri","Web.http_session_channel"
+| rename Web.uri AS to "Web.http_referer" AS from "Web.http_session_channel" AS channel "Web.site" AS site "Web.http_session" AS http_session
+| rex field=from "https?://.+?(?<from_path>/[^\\?]+)"
+| rename from_path AS from
+| eval from=if(isnull(from),"/",from)
+| streamstats global=f count AS interaction by http_session
+| eval interaction=interaction-1
+| where interaction<=round($limit$/20,0)
+| stats list(from) AS from, list(to) AS to,earliest(to) AS landing_page, list(channel) as channel, list(interaction) as interaction by http_session
+| search to="$to$" landing_page="$landing_page$"
+| eval fields = mvzip(from,mvzip(to,mvzip(interaction,channel)))
+| fields http_session fields
+| mvexpand fields
+| rex field=fields "(?<from>[^\,]+),(?<to>[^\,]+),(?<interaction>[^\,]+),(?<channel>.+)"
+| eval from=if(interaction=0, "", from)
+| table http_session from to interaction
+| where interaction>=1
+| where to!="$landing_page$"
+| where to!=from
+| stats count by from,to,interaction
+| sort interaction,-count,from,to
+| streamstats global=f count AS interaction_rank by interaction
+| where interaction_rank<=round($limit$/10,0)
+| stats sum(count) AS count by from,to
+| sort from to count
+| head $limit$
+]]>
+    </query>
+    <earliest>$earliest$</earliest>
+    <latest>$latest$</latest>
+  </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" searchWhenChanged="true">
       <default>
@@ -33,7 +67,7 @@
       <label>Session contains page</label>
       <choice value="*">Any</choice>
       <search>
-        <query>|inputlookup WA_pages | search site=$site$ | sort http_request | dedup http_request</query>
+        <query>|inputlookup WA_pages WHERE site="$site$" | sort http_request | dedup http_request</query>
       </search>
       <fieldForLabel>http_request</fieldForLabel>
       <fieldForValue>http_request</fieldForValue>
@@ -44,47 +78,24 @@
       <default>100</default>
     </input>
   </fieldset>
-  <search id="sankey_search">
-    <query>
-      <![CDATA[
-| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview "Web.http_session_pageviews">1 GROUPBY "Web.site","Web.http_session",_time span=1s,"Web.http_referer","Web.uri","Web.http_session_channel"
-| rename Web.uri AS to "Web.http_referer" AS from "Web.http_session_channel" AS channel "Web.site" AS site "Web.http_session" AS http_session
-| rex field=from "https?://.+?(?<from_path>/[^\\?]+)" 
-| rename from_path AS from
-| eval from=if(isnull(from),"/",from)
-| streamstats global=f count AS interaction by http_session 
-| eval interaction=interaction-1
-| where interaction<=round($limit$/20,0)
-| stats list(from) AS from, list(to) AS to,earliest(to) AS landing_page, list(channel) as channel, list(interaction) as interaction by http_session
-| search to="$to$" landing_page="$landing_page$"
-| eval fields = mvzip(from,mvzip(to,mvzip(interaction,channel))) 
-| fields http_session fields
-| mvexpand fields
-| rex field=fields "(?<from>[^\,]+),(?<to>[^\,]+),(?<interaction>[^\,]+),(?<channel>.+)"
-| eval from=if(interaction=0, "", from)
-| table http_session from to interaction
-| where interaction>=1
-| where to!="$landing_page$"
-| where to!=from
-| stats count by from,to,interaction
-| sort interaction,-count,from,to
-| streamstats global=f count AS interaction_rank by interaction
-| where interaction_rank<=round($limit$/10,0)
-| stats sum(count) AS count by from,to
-| sort from to count
-| head $limit$
-]]>
-    </query>
-    <earliest>$earliest$</earliest>
-    <latest>$latest$</latest>
-  </search>
   <row>
     <panel>
-      <html>
-        <h2>Navigation</h2>
-        <div id="sankey" class="splunk-view" data-require="app/SplunkAppForWebAnalytics/components/sankey/sankey" data-options="{           &quot;managerid&quot;: &quot;sankey_search&quot;,           &quot;height&quot;: &quot;400px&quot;         }">
-        </div>
-      </html>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search base="sankey_search">
+          <query/>
+        </search>
+        <option name="sankey_diagram_app.sankey_diagram.colorMode">categorical</option>
+        <option name="sankey_diagram_app.sankey_diagram.maxColor">#3fc77a</option>
+        <option name="sankey_diagram_app.sankey_diagram.minColor">#d93f3c</option>
+        <option name="sankey_diagram_app.sankey_diagram.numOfBins">6</option>
+        <option name="sankey_diagram_app.sankey_diagram.showBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLabels">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLegend">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showSelf">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showTooltip">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.styleBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.useColors">true</option>
+      </viz>
     </panel>
   </row>
 </form>

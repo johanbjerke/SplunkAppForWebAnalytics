@@ -12,6 +12,7 @@
             "objectName": "Web",
             "displayName": "Web",
             "parentName": "BaseEvent",
+            "comment": "",
             "fields": [
                 {
                     "fieldName": "category",
@@ -694,28 +695,6 @@
                 {
                     "outputFields": [
                         {
-                            "fieldName": "dmReload",
-                            "owner": "Web",
-                            "type": "number",
-                            "fieldSearch": "",
-                            "required": false,
-                            "multivalue": false,
-                            "hidden": false,
-                            "editable": true,
-                            "displayName": "dmReload",
-                            "comment": ""
-                        }
-                    ],
-                    "calculationID": "7g3czxau6pe",
-                    "owner": "Web",
-                    "editable": true,
-                    "comment": "",
-                    "calculationType": "Eval",
-                    "expression": "(1+1)"
-                },
-                {
-                    "outputFields": [
-                        {
                             "fieldName": "ua_os_family",
                             "owner": "Web",
                             "type": "string",
@@ -1053,6 +1032,7 @@
             "objectName": "Proxy",
             "displayName": "Proxy",
             "parentName": "Web",
+            "comment": "",
             "fields": [
                 {
                     "fieldName": "category",
@@ -1392,6 +1372,7 @@
             "objectName": "Missing_Extractions_Web",
             "displayName": "Missing Extractions (S.o.S)",
             "parentName": "Web",
+            "comment": "",
             "fields": [
                 {
                     "fieldName": "category",
@@ -1731,6 +1712,7 @@
             "objectName": "Untagged_Web",
             "displayName": "Untagged Web Data (S.o.S)",
             "parentName": "BaseSearch",
+            "comment": "",
             "fields": [
                 {
                     "fieldName": "_time",

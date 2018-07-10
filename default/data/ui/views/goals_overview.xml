@@ -41,7 +41,7 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
+
       </single>
     </panel>
     <panel>
@@ -56,7 +56,7 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
+
       </single>
     </panel>
     <panel>
@@ -71,7 +71,7 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="linkView">search</option>
+
       </single>
     </panel>
   </row>
