@@ -1,6 +1,6 @@
-<form script="tokenlinks.js,table_icons_inline_site_check.js" stylesheet="table_decorations.css,setup.css">
+<form script="dashboards.js" stylesheet="dashboard.css">
   <label>Websites</label>
-  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv</description>
+  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also edit this file manually.</description>
   <search id="createlookup_settings">
     <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
   </search>
@@ -8,6 +8,13 @@
   <row>
     <panel>
       <title>1. Available host and source combinations (Click to fill setup form)</title>
+      <input type="time" token="field1">
+        <label></label>
+        <default>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
       <input type="text" token="filter" searchWhenChanged="true">
         <label>Filter</label>
         <default>*</default>
@@ -21,23 +28,26 @@
     [ rest /services/properties/eventtypes/web-traffic/search splunk_server=local
     | eval search=value]
 | join type=outer sourcetype
-    [ search sourcetype=iis
+    [ search
         [| metadata type=sourcetypes
-        | search sourcetype=iis
+        | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="iis" OR sourcetype=apache:access OR sourcetype=aws:cloudfront:accesslogs OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
         | eval latest=lastTime, earliest=latest-180
-        | fields latest earliest
-            ]
-    | head 1
-    | rename host as host2
-    | fields sourcetype host2]
-| eval host=if(isnotnull(host2), host2, host)
-| stats count AS events by host, source
+        | fields latest earliest sourcetype
+        | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
+        | stats list(search) as search
+        | eval search=mvjoin('search'," OR ")
+        | fields search ]
+    | stats first(site) AS site by host, sourcetype,source
+    | rename host as host2, source AS source2
+    | fields sourcetype host2 site source2]
+| eval host=if(isnotnull(host2) AND source=source2, host2, host)
+| stats count AS events,first(site) AS site by host, source
 | search host=*** OR source=***
 | lookup WA_settings source AS source host AS host OUTPUTNEW value AS site
 | eval Configured=site
 | fields host source Configured site events</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>

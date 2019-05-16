@@ -1,0 +1,302 @@
+<dashboard script="dashboard.js" stylesheet="dashboard.css">
+  <label>Documentation</label>
+  <search ref="Data Model Acceleration Details" id="globalDMSearch"></search>
+  <search id="createlookup_settings">
+    <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
+  </search>
+  <search id="createlookup_goals">
+    <query>| outputlookup WA_goals.csv createinapp=t append=t</query>
+  </search>
+  <row>
+    <panel>
+      <html>
+	        	<h2>Installation instructions</h2>
+
+
+	        	<html>
+    	  <h3>TL;DR</h3>
+These steps needs to be done in order.
+<br/>
+<ol>
+<li>Get the data in. Use one of these sourcetype names "access_common", "access_combined" or "iis"</li>
+<li>
+              <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">Configure the sites that you want to monitor.</a>
+            </li>
+<li>Run  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate Session"</a> and <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a> lookup searches.</li>
+<li>
+              <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Enable Data Model Acceleration for Web datamodel.</a>
+            </li>
+<li>
+              <a href="goals_setup?form.field1.earliest=%40y&amp;form.field1.latest=now&amp;form.startswith=&lt;No%20start&gt;&amp;earliest=0&amp;latest=" target="_blank">Configure goals</a> (Optional)</li>
+</ol>
+</html>
+
+	                <input id="_key" type="hidden"/>
+
+					<div>
+	                    <h3>1. Import web server log data</h3>
+	                    <p class="" id="1-loading">The Splunk App for Web Analytics currently supports data from Apache and IIS logs. Make sure you use the sourcetype access_common, access_combined or iis for this data. If you already have data in Splunk under a different sourcetype you can use <a href="../../manager/launcher/data/props/sourcetype-rename?ns=SplunkAppForWebAnalytics&amp;pwnr=-&amp;search=&amp;app_only=1" target="_blank">sourcetype renaming</a> or by modifying the <a href="../../manager/launcher/saved/eventtypes?ns=SplunkAppForWebAnalytics&amp;sort_dir=desc&amp;search=web-traffic&amp;sort_key=name&amp;app_only=True" target="_blank">eventtype web-traffic</a> to include the names of your sourcetypes.</p>
+	                	<p>The app comes with two sets of sample data for Apache and IIS. You can enable these static sample inputs by going into <a href="../../manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a>
+          </p>
+	               		<p>If your data is stored in an index that is not searched by default for your Splunk user, you need to add All non-internal indexes (or the specific index in question) to the Selected indexes in <a href="../../manager/SplunkAppForWebAnalytics/authorization/roles" target="_blank">Access controls -&gt; Roles -&gt; [ROLE NAME]</a>
+          </p>
+	                </div>
+
+			</html>
+      <table id="datacheck_table">
+        <title>Web Server Log Data check (tag=web | head 5)</title>
+        <search>
+          <query>
+				            tag=web | head 5 | stats count AS Events | eval Check=Events
+				        </query>
+          <earliest>-1y@y</earliest>
+          <latest>now</latest>
+        </search>
+      </table>
+      <html>
+	                <hr/>
+
+	                <div>
+	                    <h3>2. Configure websites</h3>
+	                    <p class="" id="paragraph_2">The Splunk App for Web Analytics works in a multi website environment. Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". You can use wildcards (*) in the Source and Host field to select multiple files matching a pattern. There is a <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">website setup form page</a> that allows you to add these in an easy way. </p>
+	                   <p>
+	                   	Here are some examples of valid website configurations with or without wildcards
+	                   	</p>
+	                   	<p>
+	                   		<h4>No wildcards</h4>
+	                   	<table class="documentation_example_table table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Host</th>
+	                   			<th>Source</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>server1</td>
+	                   			<td>/var/log/httpd/access_log</td>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>server2</td>
+	                   			<td>/var/log/httpd/access_log</td>
+	                   		</tr>
+	                   	</table>
+	                  </p>
+	                  <br/>
+	                  <p>
+	                   <h4>With wildcards</h4>
+	                   	<table class="documentation_example_table table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Host</th>
+	                   			<th>Source</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>server*</td>
+	                   			<td>/var/log/httpd/access_*</td>
+	                   		</tr>
+	                   	</table>
+	                   </p>
+	                   <br/>
+	                    <p>The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also manually edit this file. The websites setup page can be found under <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">Setup-&gt;Websites</a>.</p>
+	                </div>
+	     	</html>
+      <table id="datacheck_table_1">
+        <title>Website Configuration check</title>
+        <search>
+          <query>[| metadata type=sourcetypes
+    | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+    | eval latest=lastTime, earliest=latest-180
+    | fields latest earliest sourcetype
+    | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
+    | stats list(search) as search
+    | eval search=mvjoin('search'," OR ")
+    | fields search]
+| stats count as events,first(site) AS site by host, sourcetype,source
+| fields sourcetype source site host events
+| search host=* OR source=*
+| lookup WA_settings source AS source host AS host OUTPUTNEW _key as key value AS site
+| eval Configured=site
+| eval key=if(isnull(key),"",key)
+| fields key host source Configured site events
+| eval Check=site | fields host source Check</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </table>
+      <html>
+
+	                <div>
+	                    <h3>3. Run lookups</h3>
+	                    <p class="" id="3-loading">Once the data has been imported run the two lookups <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate user sessions"</a> and  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a>. These will be used throughout the app. Once run the first time, they will automatically be updated via two scheduled searches that runs every 10 minutes that adds any new data coming into the app. Running these lookup searches might take a <b>very long time</b> depending on how much data you have in Splunk but it's important you let the searches finish before you move on to the next step. If you have too much data to run these, you can modify the time period to something less than "All time" which is the default time period. The lookup reports can be found under Setup-&gt;Lookups or by using the links above. It's important that these searches return results. If not, the app will not work.</p>
+	                	<p>For long running lookup generation searches it's recommended you select "Send Job to Background" under the Job menu in the search interface. You can see if the search is complete by looking at Activity-&gt;Jobs in the menu or by configuring Splunk to send you an email once the job is done. </p>
+	                </div>
+	    	</html>
+      <table id="datacheck_table_2">
+        <title>Lookup check</title>
+        <search>
+          <query>
+				            | inputlookup WA_sessions | stats dc(http_session) AS Sessions | appendcols [| inputlookup WA_pages | stats dc(http_request) AS Pages] | transpose | rename column AS Lookup "row 1" as Count | eval Check=Count
+				        </query>
+        </search>
+      </table>
+      <html>
+	             <p class="">Please note that the Sessions lookup might return 0 if all sessions have already been copied over to the datamodel, the Sessions lookup will only keep session data indexed in the last 24 hours. If the data model is accelerated and the acceleration is complete (or almost complete) having 0 in the Session lookup is alright. </p>
+	    	</html>
+      <html>
+	                <div>
+	                    <h3>4. Enable data model acceleration</h3>
+	                    <p class="" id="4-loading">The Splunk App for Web Analytics uses data model acceleration extensively to power the dashboards. Once the lookups in the previous step has completed you should <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">enable acceleration for the data model "Web"</a>. The data model can be found under <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Settings-&gt;Data models</a>. Set the summary range appropriately depending on how long you want to keep the data, &gt; 1 Month. The data model is updated every 10 minutes in order for the sessions to get picked up properly. The data model acceleration needs to finish before you will see any data in any dashboard except the "Real-Time" dashboard which uses raw log data as source. That means that you initially might not see data until the data model has finished building. This could initially take many hours depending on how much data it is trying to build. </p>
+	                    <p>If Events are showing 0 after install or upgrade you might have to rebuild the data model.</p>
+	                </div>
+	     	</html>
+      <table id="datacheck_table_3">
+        <title>Data Model Acceleration check</title>
+        <search>
+          <query>
+						      <![CDATA[
+| rest /servicesNS/-/-/data/models splunk_server=local
+| rename "acceleration.earliest_time" as Acceleration_Retention "eai:acl.app" as App "acceleration.cron_schedule" as Cron "acceleration" as Acceleration title AS Data_Model
+| table Data_Model App Acceleration Cron Acceleration_Retention updated
+| eval Cron=if(isnull(Cron),"",Cron)
+| join App type=outer [| rest /servicesNS/nobody/SplunkAppForWebAnalytics/admin/summarization/tstats:DM_SplunkAppForWebAnalytics_Web splunk_server=local | fields eai:acl.app summary*
+| rename summary.access_count AS "Access_Count"
+summary.access_time AS "Last_Access"
+summary.buckets AS "Buckets"
+summary.complete AS "Status"
+summary.size AS "Size_on_Disk_(Mb)"
+summary.last_error AS "Last_Error"
+summary.time_range AS "Summary_Range"
+summary.mod_time AS "Updated"
+summary.earliest_time AS "Min_Time"
+summary.latest_time AS "Max_Time"
+summary.is_inprogress AS "Summary_in_Progress"
+eai:acl.app AS App
+| eval Status=round(Status*100,2)."%"
+]
+| table Data_Model App Acceleration Acceleration_Retention Cron Summary_in_Progress Status Size_on_Disk_(Mb) Last_Error Min_Time Max_Time Now_Time Lag_Seconds Lag_Minutes Lag_Hours
+| where like(Data_Model,"Web")
+| eval Status=if(isnull(Status),"0.00%",Status)
+| fields Acceleration Status | transpose | rename column AS Web "row 1" as Value | eval Check=Value
+| append [| tstats summariesonly=t  count AS Events FROM datamodel=Web | transpose | rename column AS Web "row 1" AS Value | eval Check=Value]
+						]]>
+						</query>
+        </search>
+      </table>
+      <html>
+	                <div>
+	                    <h3>5. Configure goals (Optional)</h3>
+	                    <p class="" id="6-loading">If you want to monitor certain browsing paths or pageviews you can configure goals. This is used if you for instance want to get conversion rates or funnel abandonment rates. You can find the <a href="goals_setup?form.field1.earliest=%40y&amp;form.field1.latest=now&amp;form.startswith=&lt;No%20start&gt;&amp;earliest=0&amp;latest=" target="_blank">Goals setup page here.</a>
+	                                       </p>
+
+	                    <p>
+	                   <h4>Example goal configuration for the checkout process of a Magento eCommerce website</h4>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Goal ID</th>
+	                   			<th>Goal description</th>
+	                   			<th>Start page</th>
+	                   			<th>End page</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>goal_1</td>
+	                   			<td>Web checkout</td>
+	                   			<td>*/checkout/onepage/</td>
+	                   			<td>*/checkout/success</td>
+	                   		</tr>
+	                   	</table>
+	                   </p>
+	                   <br/>
+	                   <p>
+	                   <h4>Example goal configuration for the checkout process of a Woocommerce eCommerce website</h4>
+	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   		<tr>
+	                   			<th>Site</th>
+	                   			<th>Goal ID</th>
+	                   			<th>Goal description</th>
+	                   			<th>Start page</th>
+	                   			<th>End page</th>
+	                   		</tr>
+	                   		<tr>
+	                   			<td>roadrunner.com</td>
+	                   			<td>goal_1</td>
+	                   			<td>Web checkout</td>
+	                   			<td>No Start</td>
+	                   			<td>*/checkout/order-received/</td>
+	                   		</tr>
+	                   	</table>
+	                   </p>
+	                   <br/>
+
+	                    <p>By default the app is configured to look for goals in an index called "goal_summary". <b>This index needs to be manually created in order for this functionality to work.</b> </p>
+	                    <p>When enabling goals, the app will start monitor goal completions from the time you save the goal. To backfill goals there is a search called "Generate Goal summary - Backfill" which can be found under the Goals menu. Please note that running this search multiple times will mean the goal completions will be duplicated. To reset the goals you need to clean the "goal_summary" index.
+	                    </p>
+
+	                </div>
+	      	</html>
+      <html>
+	                 <div>
+	                    <h2>Upgrade instructions</h2>
+	                    <ol>
+							<li>Install app - Select "Upgrade App" checkbox.</li>
+						</ol>
+	                </div>
+	        </html>
+      <html>
+
+	        <div>
+	                    <h2>Considerations for upgrading from v1.x to v2.0.0</h2>
+	                    <p>Version 2.0.0 of the app has made a small change to the Web datamodel to increase compatibility with more Splunk versions. This might trigger a data model rebuild when upgrading. If you want to prevent this from happening, use the old data model definition file "web.conf" and delete the one provided wby this app. It's recommended to use the new version of web.conf as this is the version that will be used moving forwards. </p>
+	                    <p>The User Journey Flow dashboard now uses the official Sankey vizualisation add-on that needs to be downloaded separately in order for this dashboard to work. You can find this add-on here: <a href="https://splunkbase.splunk.com/app/3112/" target="_blank">https://splunkbase.splunk.com/app/3112/</a>
+          </p>
+	                    <p>The goal_summary index is now not created by the app. You need to manually add this index if you are using this feature in the app. All old data will be retained even if the index is not created by the app, just create the index manually and it will work.</p>
+	                    <p>There is a new dashboard, "Response Times" which help you find the slowest resources on your site. Your web server might not output the response time in the log by default so this needs to be enabled in order to make this dashboard work. On IIS this is often pre-enabled but on Apache and NGINX you need to add %D to the end of the log format settings of the server. More details on how to enabled this here: <a target="_target" href="http://httpd.apache.org/docs/current/mod/mod_log_config.html"/>. If you add the %D to the end of the log format for the access_combined sourcetype, the field extractions will work by default.</p>
+
+	                </div>
+	         </html>
+      <html>
+
+	                 <div>
+	                    <h2>Considerations for upgrading from v1.6 to v1.5</h2>
+	                    <p>Version 1.6 of the app uses the KV Store for the session lookups instead of a CSV file. This feature will only work on Splunk version 6.3 and above.</p>
+	                    <p>For 6.2 support of the app, you need to continue using a CSV file for the lookup. </p>
+	                    <p>To enable this you should replace the contents of, or the file "SPLUNK_HOME/etc/apps/SplunkAppForWebAnalytics/default/transforms.conf" with the corresponding 6.2 compatible file that can be found under "SPLUNK_HOME/etc/apps/SplunkAppForWebAnalytics/install/transforms_6.2.conf".</p>
+	                	<p>Restart Splunk after this is done. </p>
+	                </div>
+	        </html>
+      <html>
+
+	                 <div>
+	                    <h2>Data model rebuild instructions</h2>
+	                    <ol>
+							<li>Disable Data Model acceleration for data model "Web".</li>
+							<li>Run the "Generate user sessions" search.</li>
+							<li>Once the session generation search is complete. Re-enable data model acceleration on the Data Models configuration page.</li>
+							<li>Expand data model "Web" by clicking on the arrow on the left hand side. Click "Rebuild".</li>
+						</ol>
+	                </div>
+	        </html>
+      <html>
+
+	                 <div>
+	                    <h2>Troubleshooting</h2>
+	                    <h3>Use the Splunk Community</h3>
+	                    <a target="_blank" href="https://answers.splunk.com/app/questions/2699.html">Splunk Answers thread on Splunk App for Web Analytics</a>. A lot of the problems customers have with the app have already been solved.
+	                    <h3>The lookup searches are not returning any data</h3>
+	                    <p class="">In the context of the app, try and do the search for:</p>
+	                    <blockquote>tag=web</blockquote>
+	                    <p>If this <b>is not</b> returning any results I suspect you are not seeing the data because it is stored in a non-default index and the user in Splunk does not search in non-default indexes automatically. Another issue might be that you are not using any of the pre-configured sourcetypes. See Setup point 1 above.</p>
+	                	<p>If this <b>is</b> returning results, double check that each entry has the "site" field populated. It's crucial that this field exists in your data. See Setup point 2 above. </p>
+
+	                	<h3>All or some dashboards are returning "No results found"</h3>
+	                	<p class="">As the app relies heavily on data model accelerations you will not see anything in any dashboards (except the "Real-Time" ones) until this acceleration has completed. Initially this could take a while. There is a <a href="data_model_audit" target="_blank">"Data Model Audit"</a> dashboard that will tell you if the acceleration is complete or not. </p>
+
+	                </div>
+	        </html>
+    </panel>
+  </row>
+</dashboard>

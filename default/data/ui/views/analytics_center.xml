@@ -43,7 +43,7 @@
     <panel>
       <chart>
         <search>
-          <query>|tstats summariesonly=t prestats=t dc(Web.http_session) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.$attribute$ _time $span$ | timechart $span$ dc(Web.http_session) by Web.$attribute$  | rename Web.$attribute$  AS "$attribute_label$ " | fields - VALUE</query>
+          <query>|tstats summariesonly=t prestats=t dc(`datamodel`.http_session) FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.$attribute$ _time $span$ | timechart $span$ dc(`datamodel`.http_session) by `datamodel`.$attribute$  | rename `datamodel`.$attribute$  AS "$attribute_label$ " | fields - VALUE</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

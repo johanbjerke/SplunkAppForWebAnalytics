@@ -1,0 +1,108 @@
+<form script="dashboard.js,collections.js" stylesheet="dashboard.css">
+  <label>Websites</label>
+  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also edit this file manually.</description>
+  <search id="createlookup_settings">
+    <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
+  </search>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <title>1. Available host and source combinations (Click to fill setup form)</title>
+      <input type="time" token="field1">
+        <label></label>
+        <default>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="text" token="filter" searchWhenChanged="true">
+        <label>Filter</label>
+        <default>*</default>
+      </input>
+      <html>
+      	<p class="table_description">Verify that all applicable host and source combinations has a green checkmark in the "Configured" column.</p>
+      </html>
+      <table id="datacheck_table" depends="$filter$">
+        <search id="available_search">
+          <query>[| metadata type=sourcetypes
+    | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+    | eval latest=lastTime, earliest=latest-3600
+    | fields latest earliest sourcetype
+    | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
+    | stats list(search) as search
+    | eval search=mvjoin('search'," OR ")
+    | fields search]
+| stats count as events by host, sourcetype,source,site
+| fields sourcetype source site host events
+| search host=*$filter$* OR source=*$filter$*
+| lookup WA_settings source AS source host AS host OUTPUTNEW _key as key value AS site_lookup
+| eval Configured=if(isnotnull(site) AND isnotnull(site_lookup) AND site=site_lookup,site,null)
+| eval Reason=case(
+ isnull(site_lookup),"Site entry missing in lookup",
+ isnull(site),"Site not configured",
+ site!=site_lookup,"Site in logs and in lookup mismatch"
+)
+| eval key=if(isnull(key),"",key)
+| fields key host source Configured Reason site site_lookup events
+| rename site AS "Site in logs", site_lookup AS "Site in lookup", events AS Events</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="form.value">$row.Site in logs$</set>
+          <set token="form.host">$row.host$</set>
+          <set token="form.source">$row.source$</set>
+          <set token="form.key">$row.key$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="addnewsite">
+      <title>2. Add or update website</title>
+      <input id="setup_key" type="text" token="key"></input>
+      <input id="setup_value" type="text" token="value" searchWhenChanged="true">
+        <label>Site (www.mydomain.com)</label>
+      </input>
+      <input id="setup_host" type="text" token="host">
+        <label>Host (Accepts wildcard *)</label>
+      </input>
+      <input id="setup_source" type="text" token="source" searchWhenChanged="true">
+        <label>Source (Accepts wildcard *)</label>
+      </input>
+      <html>
+		<div id="addButton"/>
+		<div id="deleteButton"/>
+	  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>3. Configured websites (Click to update)</title>
+      <table>
+        <search id="settings_search">
+          <query>| inputlookup WA_settings | fields _key value host source | rename value AS Site, host AS Host, source as Source</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="form.key">$row._key$</set>
+          <set token="form.value">$row.Site$</set>
+          <set token="form.host">$row.Host$</set>
+          <set token="form.source">$row.Source$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

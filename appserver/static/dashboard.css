@@ -1,0 +1,37 @@
+td.icon-inline {
+    text-align: center !important;
+}
+.icon-inline i {
+    font-size: 18px;
+    margin-left: 5px;
+}
+.icon-inline i.icon-alert-circle {
+    color: #ef392c;
+}
+.icon-inline i.icon-alert {
+    color: #ff9c1a;
+}
+.icon-inline i.icon-check {
+    color: #5fff5e;
+}
+
+.documentation_example_table{
+    border-right: 1px solid #bfbfbf;
+    width: 28%;
+    min-width: 20%;
+    margin-left:10px;
+}
+.documentation_example_table th,.documentation_example_table tr {
+    border-left: 1px solid #bfbfbf;
+}
+.documentation_example_table th:last-child{
+    width: 5%;
+}
+
+#datacheck_table th[data-sort-key=Check],
+#datacheck_table_1 th[data-sort-key=Check],
+#datacheck_table_2 th[data-sort-key=Check],
+#datacheck_table_3 th[data-sort-key=Check]
+{
+    width:70px;
+}

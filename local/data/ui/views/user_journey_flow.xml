@@ -1,0 +1,101 @@
+<form script="SplunkAppForWebAnalytics:autodiscover.js">
+  <label>User Journey Flow</label>
+  <search id="sankey_search">
+    <query>
+      <![CDATA[
+| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview `datamodel`.http_session_pageviews>1 GROUPBY `datamodel`.site,`datamodel`.http_session,_time span=1s,`datamodel`.http_referer,`datamodel`.uri,`datamodel`.http_session_channel
+| rename `datamodel`.uri AS to `datamodel`.http_referer AS from `datamodel`.http_session_channel AS channel `datamodel`.site AS site `datamodel`.http_session AS http_session
+| rex field=from "https?://.+?(?<from_path>/[^\\?]+)"
+| rename from_path AS from
+| eval from=if(isnull(from),"/",from)
+| streamstats global=f count AS interaction by http_session
+| eval interaction=interaction-1
+| where interaction<=round($limit$/20,0)
+| stats list(from) AS from, list(to) AS to,earliest(to) AS landing_page, list(channel) as channel, list(interaction) as interaction by http_session
+| search to="$to$" landing_page="$landing_page$"
+| eval fields = mvzip(from,mvzip(to,mvzip(interaction,channel)))
+| fields http_session fields
+| mvexpand fields
+| rex field=fields "(?<from>[^\,]+),(?<to>[^\,]+),(?<interaction>[^\,]+),(?<channel>.+)"
+| eval from=if(interaction=0, "", from)
+| table http_session from to interaction
+| where interaction>=1
+| where to!="$landing_page$"
+| where to!=from
+| stats count by from,to,interaction
+| sort interaction,-count,from,to
+| streamstats global=f count AS interaction_rank by interaction
+| where interaction_rank<=round($limit$/10,0)
+| stats sum(count) AS count by from,to
+| sort from to count
+| head $limit$
+]]>
+    </query>
+    <earliest>$earliest$</earliest>
+    <latest>$latest$</latest>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="landing_page" searchWhenChanged="true">
+      <label>Landing page</label>
+      <choice value="*">Any</choice>
+      <search>
+        <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.site,`datamodel`.http_session,`datamodel`.uri | stats last(`datamodel`.uri) AS landing_page by `datamodel`.http_session | top limit=20 landing_page | eval landing_page_description=landing_page+" ("+count+")" | fields landing_page landing_page_description</query>
+        <earliest>0</earliest>
+        <latest>now</latest>
+      </search>
+      <fieldForLabel>landing_page_description</fieldForLabel>
+      <fieldForValue>landing_page</fieldForValue>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="to" searchWhenChanged="true">
+      <label>Session contains page</label>
+      <choice value="*">Any</choice>
+      <search>
+        <query>|inputlookup WA_pages WHERE site="$site$" | sort http_request | dedup http_request</query>
+      </search>
+      <fieldForLabel>http_request</fieldForLabel>
+      <fieldForValue>http_request</fieldForValue>
+      <default>*</default>
+    </input>
+    <input type="text" token="limit" searchWhenChanged="true">
+      <label>Flow limit</label>
+      <default>100</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search base="sankey_search">
+          <query/>
+        </search>
+        <option name="sankey_diagram_app.sankey_diagram.colorMode">categorical</option>
+        <option name="sankey_diagram_app.sankey_diagram.maxColor">#3fc77a</option>
+        <option name="sankey_diagram_app.sankey_diagram.minColor">#d93f3c</option>
+        <option name="sankey_diagram_app.sankey_diagram.numOfBins">6</option>
+        <option name="sankey_diagram_app.sankey_diagram.showBackwards">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLabels">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLegend">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showSelf">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showTooltip">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.styleBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.useColors">true</option>
+      </viz>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,472 @@
+<form>
+  <label>Audience</label>
+  <search id="base1">
+    <query>| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session</query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+  </search>
+  <search id="base2">
+    <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.clientip | iplocation `datamodel`.clientip</query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+  </search>
+  <search id="TimeComparison">
+    <query>| makeresults count=1
+    | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
+    |`addTimeCompareWindow`
+    </query>
+    <finalized>
+      <set token="ComparePeriodDescription">$result.ComparePeriodDescription$</set>
+    </finalized>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="ImmediatePeriodCompare">
+      <label>Compare settings</label>
+      <choice value="1">Compare against period immediately before</choice>
+      <choice value="0">Compare against equivalent period in past day/week/month</choice>
+      <default>1</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart depends="$span$">
+        <title>Sessions</title>
+        <search>
+          <query>| makeresults count=1 
+| eval site="$site$", span="$span$" 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| map search="
+| tstats summariesonly=t count AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site=\"$site$\" `datamodel`.eventtype=pageview
+(earliest=$$earliestCompare$$ latest=$$latestCompare$$) OR (earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time $span$,`datamodel`.http_session,`datamodel`.ua_mobile
+| timechart count AS Count,count(eval(len('`datamodel`.ua_mobile')=0)) AS Non-Mobile,sum(eval('`datamodel`.ua_mobile'!=\"\")) AS Mobile $span$
+| timewrap \"$$windowLength$$\"
+        | eval window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+    | fields Non* Mobile* *Mobile Count window windowLength earliestCompare latestCompare info_min_time info_max_time $$FieldnameCurrentPeriod$$ $$FieldnameComparePeriod$$
+" 
+| table _time *latest* Count_latest* Count*_before 
+| fields - Count_latest* latestCompare</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <query>host=$site$</query>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.overlayFields">Count_24hours_before,Count_1hour_before,Count_24hours_before,Count_4hours_before,Count_168hours_before,Count_24hours_before,Count_4weeks_before,Count_1week_before,Count_12months_before,Count_30days_before,Count_1month_before</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Sessions</title>
+        <search>
+          <query>| tstats summariesonly=t dc(`datamodel`.http_session) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview 
+| stats sum(Count) AS Count 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| eval site="$site$" 
+| map search="
+| tstats summariesonly=t dc(`datamodel`.http_session) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
+| stats sum(Count) AS CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+" 
+| `generateTimeComparison`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="trendInterval">auto</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Pageviews</title>
+        <search>
+          <query>| tstats summariesonly=t max(`datamodel`.http_session_pageviews) FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session 
+| stats sum(max(`datamodel`.http_session_pageviews)) AS Count 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| eval site="$site$" 
+| map search="
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$ GROUPBY `datamodel`.http_session
+| stats sum(max(`datamodel`.http_session_pageviews)) AS CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+" 
+| `generateTimeComparison`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Pages / Session</title>
+        <search base="base1">
+          <query>| stats dc(`datamodel`.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews 
+| eval "Pages / Session"=Pageviews/Sessions 
+| eval "Count"=round('Pages / Session',2) 
+| fields "Count" 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| eval site="$site$" 
+| map search="
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY `datamodel`.http_session
+| stats dc(`datamodel`.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews
+| eval \"Pages / Session\"=Pageviews/Sessions
+| eval CountCompare=round('Pages / Session',2)
+| fields CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+" 
+| `generateTimeComparison`</query>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Avg. Session Duration</title>
+        <search>
+          <query>| tstats summariesonly=t max(`datamodel`.http_session_duration) AS http_session_duration FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session 
+| stats avg(http_session_duration) AS AvgDuration 
+| eval Count=round(AvgDuration, 0) 
+| fieldformat Count = strftime(Count, "%M:%S") 
+| fields Count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Bouncerate</title>
+        <search base="base1">
+          <query>| stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces 
+| eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2) 
+| eval Count=Bouncerate 
+| fields Count 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| eval site="$site$" 
+| map search="
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY `datamodel`.http_session
+| stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces
+| eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2)
+| eval CountCompare=Bouncerate
+| fields CountCompare
+
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+" 
+| `generateTimeComparison`</query>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendColorInterpretation">inverse</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="unit">%</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Users</title>
+        <search>
+          <query>| tstats summariesonly=t dc(`datamodel`.user) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview 
+| eval ImmediatePeriodCompare=$ImmediatePeriodCompare$ 
+| `addTimeCompareWindow` 
+| eval site="$site$" 
+| map search="
+| tstats summariesonly=t dc(`datamodel`.user) AS CountCompare FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
+
+| fields CountCompare
+| eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
+" 
+| `generateTimeComparison`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">$ComparePeriodDescription$</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Browsers</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.ua_family 
+| fields `datamodel`.ua_family `datamodel`.http_session 
+| dedup `datamodel`.http_session 
+| top `datamodel`.ua_family countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions" 
+| rename `datamodel`.ua_family as Browser</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Mobile Devices</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview `datamodel`.ua_mobile!="" GROUPBY `datamodel`.http_session,`datamodel`.ua_mobile 
+| dedup `datamodel`.http_session 
+| top `datamodel`.ua_mobile countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions" 
+| rename `datamodel`.ua_mobile AS "Device"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Countries</title>
+        <search base="base2">
+          <query>| fields Country `datamodel`.http_session 
+| dedup `datamodel`.http_session 
+| top Country countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Cities</title>
+        <search base="base2">
+          <query>| fields City `datamodel`.http_session 
+| dedup `datamodel`.http_session 
+| top City countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions" 
+| replace "" with "(not set)" in City</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Languages</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.http_locale 
+| rex mode=sed field=`datamodel`.http_locale "s/_/-/" 
+| eval http_locale=lower('`datamodel`.http_locale') 
+| fields http_locale `datamodel`.http_session 
+| dedup `datamodel`.http_session 
+| top http_locale countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions" 
+| rename http_locale as Language</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Operating Systems</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.ua_os_family 
+| dedup `datamodel`.http_session 
+| top `datamodel`.ua_os_family countfield=Sessions 
+| eval percent=round(percent, 2) 
+| eval percent=percent."%" 
+| rename percent AS "% Sessions" 
+| rename `datamodel`.ua_os_family AS "Operating System"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <map>
+        <title>Location</title>
+        <search base="base2">
+          <query>| stats dc(`datamodel`.http_session) as count by Country 
+| geom geo_countries featureIdField="Country" allFeatures=true</query>
+        </search>
+        <option name="drilldown">all</option>
+        <option name="mapping.data.maxClusters">100</option>
+        <option name="mapping.map.center">(0,0)</option>
+        <option name="mapping.map.scrollZoom">1</option>
+        <option name="mapping.map.zoom">2</option>
+        <option name="mapping.markerLayer.markerMaxSize">50</option>
+        <option name="mapping.markerLayer.markerMinSize">10</option>
+        <option name="mapping.markerLayer.markerOpacity">0.8</option>
+        <option name="mapping.tileLayer.maxZoom">7</option>
+        <option name="mapping.tileLayer.minZoom">0</option>
+        <option name="mapping.type">choropleth</option>
+        <option name="refresh.display">progressbar</option>
+      </map>
+    </panel>
+  </row>
+</form>

@@ -1,12 +1,12 @@
 <form>
   <label>Audience</label>
   <search id="base1">
-    <query>| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session</query>
+    <query>| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session</query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
   </search>
   <search id="base2">
-    <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.clientip | iplocation Web.clientip</query>
+    <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.clientip | iplocation `datamodel`.clientip</query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
   </search>
@@ -65,9 +65,9 @@
 | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
 | `addTimeCompareWindow`
 | map search="
-| tstats summariesonly=t count AS Count FROM datamodel=Web WHERE Web.site=\"$site$\" "Web.eventtype"=pageview
-(earliest=$$earliestCompare$$ latest=$$latestCompare$$) OR (earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time $span$,Web.http_session,Web.ua_mobile
-| timechart count AS Count,count(eval(len('Web.ua_mobile')=0)) AS Non-Mobile,sum(eval('Web.ua_mobile'!=\"\")) AS Mobile $span$
+| tstats summariesonly=t count AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site=\"$site$\" `datamodel`.eventtype=pageview
+(earliest=$$earliestCompare$$ latest=$$latestCompare$$) OR (earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time $span$,`datamodel`.http_session,`datamodel`.ua_mobile
+| timechart count AS Count,count(eval(len('`datamodel`.ua_mobile')=0)) AS Non-Mobile,sum(eval('`datamodel`.ua_mobile'!=\"\")) AS Mobile $span$
 | timewrap \"$$windowLength$$\"
     | eval window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
     | fields Non* Mobile* *Mobile Count window windowLength earliestCompare latestCompare info_min_time info_max_time $$FieldnameCurrentPeriod$$ $$FieldnameComparePeriod$$
@@ -111,13 +111,13 @@
       <single>
         <title>Sessions</title>
         <search>
-          <query>| tstats summariesonly=t dc(Web.http_session) AS Count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview
+          <query>| tstats summariesonly=t dc(`datamodel`.http_session) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview
 | stats sum(Count) AS Count
 | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
 | `addTimeCompareWindow`
 | eval site="$site$"
 | map search="
-| tstats summariesonly=t dc(Web.http_session) AS Count FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
+| tstats summariesonly=t dc(`datamodel`.http_session) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
 | stats sum(Count) AS CountCompare
 | eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
 "
@@ -142,14 +142,14 @@
       <single>
         <title>Pageviews</title>
         <search>
-          <query>| tstats summariesonly=t max(Web.http_session_pageviews) FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session | stats sum(max(Web.http_session_pageviews)) AS Count
+          <query>| tstats summariesonly=t max(`datamodel`.http_session_pageviews) FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session | stats sum(max(`datamodel`.http_session_pageviews)) AS Count
 
 | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
 | `addTimeCompareWindow`
 | eval site="$site$"
 | map search="
-| tstats summariesonly=t max(Web.http_session_pageviews) FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$ GROUPBY Web.http_session
-| stats sum(max(Web.http_session_pageviews)) AS CountCompare
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$ GROUPBY `datamodel`.http_session
+| stats sum(max(`datamodel`.http_session_pageviews)) AS CountCompare
 | eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
 "
 | `generateTimeComparison`</query>
@@ -169,7 +169,7 @@
       <single>
         <title>Pages / Session</title>
         <search base="base1">
-          <query>| stats dc(Web.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews
+          <query>| stats dc(`datamodel`.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews
 | eval "Pages / Session"=Pageviews/Sessions
 | eval "Count"=round('Pages / Session',2)
 | fields "Count"
@@ -178,8 +178,8 @@
 | `addTimeCompareWindow`
 | eval site="$site$"
 | map search="
-| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY Web.http_session
-| stats dc(Web.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY `datamodel`.http_session
+| stats dc(`datamodel`.http_session) AS Sessions,sum(http_session_pageviews) AS Pageviews
 | eval \"Pages / Session\"=Pageviews/Sessions
 | eval CountCompare=round('Pages / Session',2)
 | fields CountCompare
@@ -202,7 +202,7 @@
       <single>
         <title>Avg. Session Duration</title>
         <search>
-          <query>| tstats summariesonly=t max(Web.http_session_duration) AS http_session_duration FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session
+          <query>| tstats summariesonly=t max(`datamodel`.http_session_duration) AS http_session_duration FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session
 | stats avg(http_session_duration) AS AvgDuration
 | eval Count=round(AvgDuration, 0)
 | fieldformat Count = strftime(Count, "%M:%S")
@@ -229,7 +229,7 @@
 | `addTimeCompareWindow`
 | eval site="$site$"
 | map search="
-| tstats summariesonly=t max(Web.http_session_pageviews) AS http_session_pageviews FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY Web.http_session
+| tstats summariesonly=t max(`datamodel`.http_session_pageviews) AS http_session_pageviews FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$  GROUPBY `datamodel`.http_session
 | stats count(eval(http_session_pageviews=1)) AS Bounces, count(eval(http_session_pageviews&gt;1)) AS NonBounces
 | eval Bouncerate=round(100*(Bounces/(Bounces+NonBounces)),2)
 | eval CountCompare=Bouncerate
@@ -255,13 +255,13 @@
       <single>
         <title>Users</title>
         <search>
-          <query>| tstats summariesonly=t dc(Web.user) AS Count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview
+          <query>| tstats summariesonly=t dc(`datamodel`.user) AS Count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview
 
 | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
 | `addTimeCompareWindow`
 | eval site="$site$"
 | map search="
-| tstats summariesonly=t dc(Web.user) AS CountCompare FROM datamodel=Web WHERE Web.site="$$site$$" "Web.eventtype"=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
+| tstats summariesonly=t dc(`datamodel`.user) AS CountCompare FROM datamodel=`datamodel` WHERE `datamodel`.site="$$site$$" `datamodel`.eventtype=pageview earliest=$$earliestCompare$$ latest=$$latestCompare$$
 
 | fields CountCompare
 | eval Count="$$Count$$", window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
@@ -284,7 +284,7 @@
       <chart>
         <title>Top Browsers</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.ua_family | fields Web.ua_family Web.http_session | dedup Web.http_session | top Web.ua_family countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename Web.ua_family as Browser</query>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.ua_family | fields `datamodel`.ua_family `datamodel`.http_session | dedup `datamodel`.http_session | top `datamodel`.ua_family countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename `datamodel`.ua_family as Browser</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -319,7 +319,7 @@
       <chart>
         <title>Top Mobile Devices</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview  Web.ua_mobile!="" GROUPBY Web.http_session,Web.ua_mobile | dedup Web.http_session  | top Web.ua_mobile countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename Web.ua_mobile AS "Device"</query>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview  `datamodel`.ua_mobile!="" GROUPBY `datamodel`.http_session,`datamodel`.ua_mobile | dedup `datamodel`.http_session  | top `datamodel`.ua_mobile countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename `datamodel`.ua_mobile AS "Device"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -358,7 +358,7 @@
       <table>
         <title>Top Countries</title>
         <search base="base2">
-          <query>| fields Country Web.http_session | dedup Web.http_session | top Country countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions"</query>
+          <query>| fields Country `datamodel`.http_session | dedup `datamodel`.http_session | top Country countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions"</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">true</option>
@@ -371,7 +371,7 @@
       <table>
         <title>Top Cities</title>
         <search base="base2">
-          <query>| fields City Web.http_session | dedup Web.http_session | top City countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" |  replace "" with "(not set)" in City</query>
+          <query>| fields City `datamodel`.http_session | dedup `datamodel`.http_session | top City countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" |  replace "" with "(not set)" in City</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">true</option>
@@ -386,7 +386,7 @@
       <table>
         <title>Top Languages</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.http_locale | rex mode=sed field=Web.http_locale "s/_/-/" | eval http_locale=lower('Web.http_locale') | fields http_locale Web.http_session | dedup Web.http_session | top http_locale countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename http_locale as Language</query>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.http_locale | rex mode=sed field=`datamodel`.http_locale "s/_/-/" | eval http_locale=lower('`datamodel`.http_locale') | fields http_locale `datamodel`.http_session | dedup `datamodel`.http_session | top http_locale countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename http_locale as Language</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -401,7 +401,7 @@
       <table>
         <title>Top Operating Systems</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=Web WHERE Web.site="$site$" "Web.eventtype"=pageview GROUPBY Web.http_session,Web.ua_os_family | dedup Web.http_session  | top Web.ua_os_family countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename Web.ua_os_family AS "Operating System"</query>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.ua_os_family | dedup `datamodel`.http_session  | top `datamodel`.ua_os_family countfield=Sessions | eval percent=round(percent, 2) | eval percent=percent."%" | rename percent AS "% Sessions" | rename `datamodel`.ua_os_family AS "Operating System"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -418,7 +418,7 @@
       <map>
         <title>Location</title>
         <search base="base2">
-          <query>| stats dc(Web.http_session) as count by Country
+          <query>| stats dc(`datamodel`.http_session) as count by Country
 | geom geo_countries featureIdField="Country" allFeatures=true</query>
         </search>
         <option name="drilldown">all</option>

@@ -1,0 +1,110 @@
+<form>
+  <label>Analytics Center</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Time period</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Show by</label>
+      <choice value="1h">Hour</choice>
+      <choice value="1d">Day</choice>
+      <choice value="1w">Week</choice>
+      <choice value="1m">Month</choice>
+      <default>1d</default>
+      <prefix>span=</prefix>
+    </input>
+    <input type="dropdown" token="site" searchWhenChanged="true">
+      <label>Site</label>
+      <search>
+        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+      </search>
+      <fieldForLabel>value</fieldForLabel>
+      <fieldForValue>value</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="attribute" searchWhenChanged="true">
+      <label>Dimension</label>
+      <choice value="ua_family">Browser</choice>
+      <choice value="http_session_channel">Channel</choice>
+      <choice value="ua_mobile">Mobile Device</choice>
+      <choice value="ua_os_family">OS</choice>
+      <choice value="http_session_referrer_domain">Referrer Domain</choice>
+      <change>
+        <set token="attribute_label">$label$</set>
+      </change>
+      <default>ua_mobile</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <search>
+          <query>| tstats summariesonly=t prestats=t dc(`datamodel`.http_session) FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.$attribute$ _time $span$ 
+| timechart $span$ dc(`datamodel`.http_session) by `datamodel`.$attribute$ 
+| rename `datamodel`.$attribute$ AS "$attribute_label$ " 
+| fields - VALUE</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Analytics by Dimension</title>
+      <table>
+        <search>
+          <query>| `analytics($attribute$,$site$)` 
+| join type=outer $attribute$ 
+    [| `analytics_goal($attribute$,1,$site$)`] 
+| join type=outer $attribute$ 
+    [| `analytics_goal($attribute$,2,$site$)`] 
+| join type=outer $attribute$ 
+    [| `analytics_goal($attribute$,3,$site$)`] 
+| rename $attribute$ as "$attribute_label$" 
+| sort -Sessions 
+| fillnull "Completed (Goal 1)" "Completed (Goal 2)" "Completed (Goal 3)" 
+| fillnull value="0.00%" "Conversion Rate (Goal 1)" "Conversion Rate (Goal 2)" "Conversion Rate (Goal 3)" 
+| where NOT like('$attribute_label$',"")</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
