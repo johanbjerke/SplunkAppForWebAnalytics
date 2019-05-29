@@ -349,7 +349,7 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 						3. File field not present<br />
 						Another field that is known to cause problems is the "file" field. This needs to be present in your field extractions and if it is not, you will not see the "eventtype-=pageview" which is necessary for the app to work. Make sure this is extracted correctly.
 						</p>
-	                    
+
 	                	<h3>All or some dashboards are returning "No results found"</h3>
 	                	<p class="">As the app relies heavily on data model accelerations you will not see anything in any dashboards (except the "Real-Time" ones) until this acceleration has completed. Initially this could take a while. There is a <a href="data_model_audit" target="_blank">"Data Model Audit"</a> dashboard that will tell you if the acceleration is complete or not. </p>
 
