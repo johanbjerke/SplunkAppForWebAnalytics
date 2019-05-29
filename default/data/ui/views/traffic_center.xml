@@ -21,7 +21,7 @@
     <input type="dropdown" token="site" searchWhenChanged="true">
       <label>Site</label>
       <search>
-        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+        <query>|inputlookup WA_settings | fields value source | dedup value</query>
       </search>
       <fieldForLabel>value</fieldForLabel>
       <fieldForValue>value</fieldForValue>
@@ -34,18 +34,21 @@
       <chart>
         <title>Request Count by Type</title>
         <search>
-          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview OR `datamodel`.eventtype=non-pageview GROUPBY `datamodel`.eventtype _time $span$ | search `datamodel`.eventtype=pageview OR `datamodel`.eventtype=non-pageview | timechart $span$ count by `datamodel`.eventtype</query>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview OR Web.eventtype=non-pageview GROUPBY Web.eventtype _time $span$ 
+| search Web.eventtype=pageview OR Web.eventtype=non-pageview 
+| timechart $span$ count by Web.eventtype</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -59,25 +62,29 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
     <panel>
       <chart>
         <title>Request Volume by Type</title>
         <search>
-          <query>| tstats summariesonly=t sum(`datamodel`.bytes) AS Volume FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview OR `datamodel`.eventtype=non-pageview GROUPBY `datamodel`.eventtype _time $span$ | search `datamodel`.eventtype=pageview OR  `datamodel`.eventtype=non-pageview | eval Volume=round(Volume/1024/1024,1) |  timechart $span$ sum(Volume) AS Volume by `datamodel`.eventtype</query>
+          <query>| tstats summariesonly=t sum(Web.bytes) AS Volume FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview OR Web.eventtype=non-pageview GROUPBY Web.eventtype _time $span$ 
+| search Web.eventtype=pageview OR Web.eventtype=non-pageview 
+| eval Volume=round(Volume/1024/1024,1) 
+| timechart $span$ sum(Volume) AS Volume by Web.eventtype</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Mb</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -91,7 +98,7 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.axisTitleY.text">Mb</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
@@ -100,18 +107,21 @@
       <chart>
         <title>Direct Requests Count by URI</title>
         <search>
-          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=non-pageview GROUPBY `datamodel`.eventtype `datamodel`.uri _time $span$ | search `datamodel`.eventtype="direct-referer" | timechart useother=f $span$ limit=20 count by `datamodel`.uri</query>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=non-pageview GROUPBY Web.eventtype Web.uri _time $span$ 
+| search Web.eventtype="direct-referer" 
+| timechart useother=f $span$ limit=20 count by Web.uri</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -125,25 +135,29 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
     <panel>
       <chart>
         <title>Direct Request Volume by URI</title>
         <search>
-          <query>| tstats summariesonly=t sum(`datamodel`.bytes) AS Volume FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=non-pageview GROUPBY `datamodel`.eventtype `datamodel`.uri _time $span$ | search `datamodel`.eventtype="direct-referer" | eval Volume=round(Volume/1024/1024,1) |  timechart useother=f $span$ limit=20 sum(Volume) by `datamodel`.uri</query>
+          <query>| tstats summariesonly=t sum(Web.bytes) AS Volume FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=non-pageview GROUPBY Web.eventtype Web.uri _time $span$ 
+| search Web.eventtype="direct-referer" 
+| eval Volume=round(Volume/1024/1024,1) 
+| timechart useother=f $span$ limit=20 sum(Volume) by Web.uri</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Mb</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -157,7 +171,7 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.axisTitleY.text">Mb</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
@@ -166,30 +180,42 @@
       <table>
         <title>Direct Traffic by URI and IP</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype="direct-referer" GROUPBY `datamodel`.uri `datamodel`.clientip | sort -count</query>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype="direct-referer" GROUPBY Web.uri Web.clientip 
+| sort -count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
       </table>
     </panel>
     <panel>
       <table>
         <title>Direct Traffic Top 5 Requests by URI and IP</title>
         <search>
-          <query>| tstats summariesonly=t count AS Requests FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=direct-referer `datamodel`.eventtype!=resourceview `datamodel`.eventtype!=`datamodel`-uri-nonpage GROUPBY  `datamodel`.uri `datamodel`.clientip | eventstats sum(Requests) as Total by `datamodel`.uri | sort -Total -Requests | streamstats dc(`datamodel`.clientip) as "clientip_order" by `datamodel`.uri | streamstats dc(`datamodel`.uri) as "uri_order" | where clientip_order&lt;6 AND uri_order&lt;6 | rename `datamodel`.uri AS uri, `datamodel`.clientip as clientip, Total AS "Total Requests for uri" | iplocation clientip | fields - clientip_order uri_order Region lat lon | table uri "Total Requests for uri" clientip Requests Country City</query>
+          <query>| tstats summariesonly=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=direct-referer Web.eventtype!=resourceview Web.eventtype!=Web.-uri-nonpage GROUPBY Web.uri Web.clientip 
+| eventstats sum(Requests) as Total by Web.uri 
+| sort -Total -Requests 
+| streamstats dc(Web.clientip) as "clientip_order" by Web.uri 
+| streamstats dc(Web.uri) as "uri_order" 
+| where clientip_order&lt;6 AND uri_order&lt;6 
+| rename Web.uri AS uri, Web.clientip as clientip, Total AS "Total Requests for uri" 
+| iplocation clientip 
+| fields - clientip_order uri_order Region lat lon 
+| table uri "Total Requests for uri" clientip Requests Country City</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
       </table>
     </panel>
   </row>

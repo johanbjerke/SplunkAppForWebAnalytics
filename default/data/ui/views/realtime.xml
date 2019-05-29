@@ -1,17 +1,24 @@
 <form>
   <label>Real-Time</label>
+  <description>Panels update every 5s</description>
+  <search id="base1">
+    <query>eventtype=pageview site="$site$" | fields * </query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <refresh>5s</refresh>
+  </search>
   <fieldset>
     <input type="time" token="field1">
-      <label></label>
+      <label>Window</label>
       <default>
-        <earliest>rt-30m</earliest>
-        <latest>rt</latest>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="site" searchWhenChanged="true">
       <label>Site</label>
       <search>
-        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+        <query>|inputlookup WA_settings | fields value source | dedup value</query>
       </search>
       <fieldForLabel>value</fieldForLabel>
       <fieldForValue>value</fieldForValue>
@@ -19,19 +26,12 @@
       <default>*</default>
     </input>
   </fieldset>
-  <search id="base1">
-          <query>eventtype=pageview site="$site$" | fields * </query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
   <row>
     <panel>
       <single>
         <title>Right now</title>
-        <search>
+        <search base="base1">
           <query>| stats dc(user)</query>
-          <earliest>rt-1m</earliest>
-          <latest>rt</latest>
         </search>
         <option name="drilldown">none</option>
         <option name="underLabel">active users on site in the last minute</option>
@@ -39,9 +39,13 @@
       </single>
       <chart>
         <search base="base1">
-          <query>| stats dc(eval(match(eventtype,"ua-mobile*"))) AS Mobile, dc(eval(!match(eventtype,"ua-mobile*"))) AS Desktop by user | stats sum(Mobile) AS Mobile, sum(Desktop) AS Desktop | transpose |  rename "row 1" as count</query>
+          <query>| stats dc(eval(match(eventtype,"ua-mobile*"))) AS Mobile, dc(eval(!match(eventtype,"ua-mobile*"))) AS Desktop by user 
+| stats sum(Mobile) AS Mobile, sum(Desktop) AS Desktop 
+| transpose 
+| rename "row 1" as count</query>
+          <refresh>5s</refresh>
+          <refreshType>delay</refreshType>
         </search>
-        <option name="charting.chart">pie</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -50,6 +54,7 @@
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
         <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
@@ -62,6 +67,7 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
         <option name="height">200</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
     <panel>
@@ -70,6 +76,8 @@
         <title>Per minute</title>
         <search base="base1">
           <query>| timechart span=1m count AS Pageviews</query>
+          <refresh>5s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -78,7 +86,7 @@
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
-        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
@@ -93,6 +101,7 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
         <option name="height">300</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
@@ -101,28 +110,44 @@
       <table>
         <title>Top Referals</title>
         <search base="base1">
-          <query>| search `channel`  |  stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user |  stats count AS Users by http_referer_domain | fields http_referer_domain Users | rename http_referer_domain as "Referer"  | appendpipe [stats sum(Users) AS Users| eval Referer="Total for site"] |  sort -Users</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <query>| search `channel` 
+| stats max(http_pageviews) AS http_pageviews,range(http_pageviews) AS http_session_duration,first(http_referer_domain) AS http_referer_domain by user 
+| stats count AS Users by http_referer_domain 
+| fields http_referer_domain Users 
+| rename http_referer_domain as "Referer" 
+| appendpipe 
+    [ stats sum(Users) AS Users 
+    | eval Referer="Total for site"] 
+| sort -Users</query>
+          <refresh>5s</refresh>
+          <refreshType>delay</refreshType>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">true</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
       </table>
     </panel>
     <panel>
       <table>
         <title>Top Active Pages</title>
         <search base="base1">
-          <query>| search user=*  | stats list(http_request) AS http_request by user | top http_request countfield="Users"| rename http_request AS Page | fields - percent</query>
+          <query>| search user=* 
+| stats list(http_request) AS http_request by user 
+| top http_request countfield="Users" 
+| rename http_request AS Page 
+| fields - percent</query>
+          <refresh>5s</refresh>
+          <refreshType>delay</refreshType>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">false</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
       </table>
     </panel>
   </row>
@@ -131,8 +156,13 @@
       <map>
         <title>Top Locations</title>
         <search base="base1">
-          <query>| search user=*  | iplocation clientip | geostats count</query>
+          <query>| search user=* 
+| iplocation clientip 
+| geostats count</query>
+          <refresh>5s</refresh>
+          <refreshType>delay</refreshType>
         </search>
+        <option name="drilldown">all</option>
         <option name="mapping.data.maxClusters">100</option>
         <option name="mapping.map.center">(0,0)</option>
         <option name="mapping.map.zoom">2</option>
@@ -141,7 +171,7 @@
         <option name="mapping.markerLayer.markerOpacity">0.8</option>
         <option name="mapping.tileLayer.maxZoom">7</option>
         <option name="mapping.tileLayer.minZoom">0</option>
-        <option name="drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
       </map>
     </panel>
   </row>

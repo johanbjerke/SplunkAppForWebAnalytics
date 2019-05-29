@@ -1,6 +1,0 @@
-key,value,source,host
-site,"10.64.3.152","/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/sample_iis_logs2_msiisauto.log","10.64.3.152*"
-site,"10.64.3.152*","/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/sample_iis_logs2_msiisauto.log","jbjerke-mba13.splunk.local"
-site,apache,"/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/apache.log","jbjerke-mba13.splunk.local"
-site,"secc4644.hm.com","/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/sample_iis_logs2_msiisauto.log","secc4644.hm.com"
-site,"supplierportal.hm.com","/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/sample_iis_logs2_msiisauto.log","supplierportal.hm.com"

@@ -21,7 +21,7 @@
     <input type="dropdown" token="site" searchWhenChanged="true">
       <label>Site</label>
       <search>
-        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+        <query>|inputlookup WA_settings | fields value source | dedup value</query>
       </search>
       <fieldForLabel>value</fieldForLabel>
       <fieldForValue>value</fieldForValue>
@@ -78,7 +78,7 @@
       <chart>
         <title>Analyzer</title>
         <search>
-          <query>| tstats summariesonly=t  prestats=t $metric_primary$ FROM datamodel=Web WHERE Web.status&gt;=$excludeerrors$ Web.site="$site$" GROUPBY "$attribute$" _time $span$ |  timechart useother=$useother$ $span$ $metric_primary$ by "$attribute$"</query>
+          <query>| tstats summariesonly=t  prestats=t $metric_primary$ FROM datamodel=`datamodel` WHERE Web.status&gt;=$excludeerrors$ Web.site="$site$" GROUPBY "$attribute$" _time $span$ |  timechart useother=$useother$ $span$ $metric_primary$ by "$attribute$"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -119,7 +119,7 @@
       </input>
       <chart>
         <search>
-          <query>| tstats summariesonly=t $metric_primary$ $metric_secondary$ FROM datamodel=Web WHERE Web.status&gt;=$excludeerrors$  Web.site="$site$" GROUPBY "$attribute$" | sort 10 -"$metric_primary$"</query>
+          <query>| tstats summariesonly=t $metric_primary$ $metric_secondary$ FROM datamodel=`datamodel` WHERE Web.status&gt;=$excludeerrors$  Web.site="$site$" GROUPBY "$attribute$" | sort 10 -"$metric_primary$"</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

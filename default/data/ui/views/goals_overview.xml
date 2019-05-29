@@ -20,7 +20,7 @@
     <input type="dropdown" token="site" searchWhenChanged="true">
       <label>Site</label>
       <search>
-        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+        <query>|inputlookup WA_settings | fields value source | dedup value</query>
       </search>
       <fieldForLabel>value</fieldForLabel>
       <fieldForValue>value</fieldForValue>

@@ -1,6 +1,6 @@
-<form script="dashboards.js" stylesheet="dashboard.css">
+<form script="dashboard.js,collections.js" stylesheet="dashboard.css">
   <label>Websites</label>
-  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com".  Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also edit this file manually.</description>
+  <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com". Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also edit this file manually.</description>
   <search id="createlookup_settings">
     <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
   </search>
@@ -22,30 +22,33 @@
       <html>
       	<p class="table_description">Verify that all applicable host and source combinations has a green checkmark in the "Configured" column.</p>
       </html>
-      <table id="available_sources_table" depends="$filter$">
-        <search>
-          <query>| metasearch
-    [ rest /services/properties/eventtypes/web-traffic/search splunk_server=local
-    | eval search=value]
-| join type=outer sourcetype
-    [ search
-        [| metadata type=sourcetypes
-        | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="iis" OR sourcetype=apache:access OR sourcetype=aws:cloudfront:accesslogs OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
-        | eval latest=lastTime, earliest=latest-180
-        | fields latest earliest sourcetype
-        | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
-        | stats list(search) as search
-        | eval search=mvjoin('search'," OR ")
-        | fields search ]
-    | stats first(site) AS site by host, sourcetype,source
-    | rename host as host2, source AS source2
-    | fields sourcetype host2 site source2]
-| eval host=if(isnotnull(host2) AND source=source2, host2, host)
-| stats count AS events,first(site) AS site by host, source
-| search host=*** OR source=***
-| lookup WA_settings source AS source host AS host OUTPUTNEW value AS site
-| eval Configured=site
-| fields host source Configured site events</query>
+      <table id="datacheck_table" depends="$filter$">
+        <search id="available_search">
+          <query>[| metadata type=sourcetypes
+    | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+    | eval latest=lastTime, earliest=latest-3600
+    | fields latest earliest sourcetype
+    | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
+    | stats list(search) as search
+    | eval search=mvjoin('search'," OR ")
+    | fields search]
+| stats count as events by host, sourcetype,source,site
+| fields sourcetype source site host events
+| search host=*$filter$* OR source=*$filter$*
+| lookup WA_settings source AS source host AS host OUTPUTNEW _key as key value AS site_lookup
+| eval key=if(isnull(key),"",key)
+| eval Configured=case(
+isnotnull(site) AND isnotnull(site_lookup) AND site=site_lookup,"Yes",
+isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
+1=1,null)
+| eval Reason=case(
+ isnull(site_lookup),"Site entry missing in lookup",
+ isnull(site),"Site not configured",
+ site!=site_lookup,"Site in logs and in lookup mismatch. This might be ok if you want to override the default site name in the logs."
+)
+| fields key host source Configured Reason site site_lookup events
+| table key host source site site_lookup events Configured Reason
+| rename site AS "Site in logs", site_lookup AS "Site in lookup", events AS Events</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -54,63 +57,88 @@
         <option name="drilldown">row</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
-        <option name="wrap">true</option>
+        <option name="wrap">false</option>
         <drilldown>
-          <set token="form.value"></set>
+          <eval token="form.value">case($row.Site in lookup$!="", $row.Site in lookup$,$row.Site in logs$!="",$row.Site in logs$,1=1,"")</eval>
           <set token="form.host">$row.host$</set>
           <set token="form.source">$row.source$</set>
+          <set token="form.key">$row.key$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="addnewsite">
+      <title>2. Add or edit website configuration</title>
+      <input id="setup_key" type="text" token="key"></input>
+      <input id="setup_value" type="text" token="value" searchWhenChanged="true">
+        <label>Site (www.mydomain.com)</label>
+      </input>
+      <input id="setup_host" type="text" token="host">
+        <label>Host (Accepts wildcard *)</label>
+      </input>
+      <input id="setup_source" type="text" token="source" searchWhenChanged="true">
+        <label>Source (Accepts wildcard *)</label>
+      </input>
+      <html>
+		<div id="addButton"/>
+		<div id="clearButton"/>
+		<div id="deleteButton"/>
+
+	  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>3. Configured websites (Click to edit from the form)</title>
+      <table>
+        <search id="settings_search">
+          <query>| inputlookup WA_settings | fields _key value host source | rename value AS Site, host AS Host, source as Source</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="form.key">$row._key$</set>
+          <set token="form.value">$row.Site$</set>
+          <set token="form.host">$row.Host$</set>
+          <set token="form.source">$row.Source$</set>
         </drilldown>
       </table>
     </panel>
   </row>
   <row>
     <panel>
-      <title>2. Setup new website</title>
-      <input type="text" token="value" searchWhenChanged="true">
-        <label>Site (www.mydomain.com)</label>
-      </input>
-      <input type="text" token="host">
-        <label>Host (Accepts wildcard *)</label>
-      </input>
-      <input type="text" token="source" searchWhenChanged="true" id="setup_source">
-        <label>Source (Accepts wildcard *)</label>
-      </input>
-      <html>
-		<button class="btn" data-set-token="save_site" data-value="show">Save website</button>
-	</html>
-      <single depends="$save_site$">
-        <search>
-          <query>|inputlookup WA_settings.csv | search (host!="$host$" OR source!="$source$") | append [search | stats count | eval key="site"| eval value="$value$"| eval host="$host$" | eval source="$source$"] | fields key value source host | sort key value | outputlookup WA_settings.csv createinapp=t | eval Response="Site was succesfully saved." | head 1 | fields Response</query>
+      <title>4. Migrating config from v2.1 (csv) to &gt;v2.1 (KV Store) - OPTIONAL</title>
+      <table>
+        <title>Below are the configs currently in the WA_settings.csv file. If you want to migrate this config to the KV store, click the button at the bottom. You only need to do this once.</title>
+        <search id="migration_search">
+          <query>| inputlookup WA_settings.csv
+                </query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
-        <option name="wrap">undefined</option>
-        <option name="rowNumbers">true</option>
-        <option name="drilldown">none</option>
+        <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
-        <option name="count">10</option>
-      </single>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+      </table>
+      <html>
+		<div id="migrateButton"/>
+	  </html>
     </panel>
   </row>
   <row>
-    <panel>
-      <title>3. Configured websites (Click to fill setup form)</title>
+    <panel depends="migrationStatus">
       <table>
-        <search>
-          <query>| inputlookup WA_settings.csv | search key=site | fields value host source | rename value AS Site, host AS Host, source as Source</query>
-          <earliest>0</earliest>
-          <latest></latest>
+        <search id="migrationSearch">
+          <query/>
         </search>
-        <option name="wrap">true</option>
-        <option name="rowNumbers">true</option>
-        <option name="drilldown">row</option>
-        <drilldown>
-          <set token="form.value">$row.Site$</set>
-          <set token="form.host">$row.Host$</set>
-          <set token="form.source">$row.Source$</set>
-        </drilldown>
-        <option name="dataOverlayMode">none</option>
-        <option name="count">5</option>
       </table>
     </panel>
   </row>

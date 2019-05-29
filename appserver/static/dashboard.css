@@ -8,7 +8,7 @@ td.icon-inline {
 .icon-inline i.icon-alert-circle {
     color: #ef392c;
 }
-.icon-inline i.icon-alert {
+.icon-inline i.icon-warning {
     color: #ff9c1a;
 }
 .icon-inline i.icon-check {
@@ -24,14 +24,26 @@ td.icon-inline {
 .documentation_example_table th,.documentation_example_table tr {
     border-left: 1px solid #bfbfbf;
 }
-.documentation_example_table th:last-child{
-    width: 5%;
-}
 
-#datacheck_table th[data-sort-key=Check],
-#datacheck_table_1 th[data-sort-key=Check],
-#datacheck_table_2 th[data-sort-key=Check],
-#datacheck_table_3 th[data-sort-key=Check]
+#datacheck_table th[data-sort-key=Check],#datacheck_table th[data-sort-key=Configured],
+#datacheck_table_1 th[data-sort-key=Check],#datacheck_table_1 th[data-sort-key=Configured],
+#datacheck_table_2 th[data-sort-key=Check],#datacheck_table_2 th[data-sort-key=Configured],
+#datacheck_table_3 th[data-sort-key=Check],#datacheck_table_3 th[data-sort-key=Configured]
 {
     width:70px;
+}
+#datacheck_table th[data-sort-key=Reason],
+#datacheck_table_1 th[data-sort-key=Reason],
+#datacheck_table_2 th[data-sort-key=Reason],
+#datacheck_table_3 th[data-sort-key=Reason]
+{
+    width:200px;
+    min-width:200px;
+}
+#datacheck_table th[data-sort-key=source],
+#datacheck_table_1 th[data-sort-key=source],
+#datacheck_table_2 th[data-sort-key=source],
+#datacheck_table_3 th[data-sort-key=source]
+{
+    width:100px;
 }

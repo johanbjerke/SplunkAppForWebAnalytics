@@ -1,3 +1,0 @@
-key,value,source,host
-site,apache,"/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/apache.log","jbjerke-mba13.splunk.local"
-site,iislogs2,"/Users/jbjerke/Documents/Splunk/Product/Instance/web/etc/apps/SplunkAppForWebAnalytics/samples/sample_iis_logs2_msiisauto.log","jbjerke-mba13.splunk.local"

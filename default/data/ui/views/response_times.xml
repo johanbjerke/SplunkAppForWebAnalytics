@@ -21,7 +21,7 @@
     <input type="dropdown" token="site" searchWhenChanged="true">
       <label>Site</label>
       <search>
-        <query>|inputlookup WA_settings.csv | search key=site | fields value source | dedup value</query>
+        <query>|inputlookup WA_settings | fields value source | dedup value</query>
       </search>
       <fieldForLabel>value</fieldForLabel>
       <fieldForValue>value</fieldForValue>
@@ -34,7 +34,7 @@
       <chart>
         <title>Average Response Time</title>
         <search>
-          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=Web WHERE Web.site="$site$" GROUPBY _time $span$ 
+          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY _time $span$ 
 | eval response_time=round(response_time/1000,2)
 | timechart avg(response_time) AS response_time $span$</query>
           <earliest>$field1.earliest$</earliest>
@@ -69,7 +69,7 @@
       <chart>
         <title>Average Response Time and Requests</title>
         <search>
-          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time, count FROM datamodel=Web WHERE Web.site="$site$" GROUPBY _time $span$ 
+          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time, count FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY _time $span$ 
 | eval response_time=round(response_time/1000,2)
 | timechart avg(response_time) AS "Response time", sum(count) AS Requests $span$</query>
           <earliest>$field1.earliest$</earliest>
@@ -107,7 +107,7 @@
       <table>
         <title>Slowest URLs</title>
         <search>
-          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=Web WHERE Web.site="$site$" GROUPBY Web.uri
+          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY Web.uri
 | eval response_time=round(response_time/1000,2)
 | sort - response_time</query>
           <earliest>$field1.earliest$</earliest>
@@ -123,7 +123,7 @@
       <chart>
         <title>Response Time by Server</title>
         <search>
-          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=Web WHERE Web.site="$site$" GROUPBY host _time $span$ 
+          <query>| tstats summariesonly=f avg(Web.response_time) AS response_time FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY host _time $span$ 
 | eval response_time=round(response_time/1000,2)
 | timechart avg(response_time) AS response_time $span$ by host</query>
           <earliest>$field1.earliest$</earliest>

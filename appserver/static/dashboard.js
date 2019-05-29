@@ -15,9 +15,11 @@ require([
 
             // Compute the icon base on the field value
             var icon;
-            if(!site) {
+            if(site=="Maybe") {
+                icon = 'warning';
+            } else if (!site || site=="0" || site=="0.00%" || site=="") {
                 icon = 'alert-circle';
-            } else {
+            } else if (site) {
                 icon = 'check';
             }
 

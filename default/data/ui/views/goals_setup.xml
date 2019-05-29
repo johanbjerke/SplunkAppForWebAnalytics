@@ -41,7 +41,7 @@
       <input type="dropdown" token="site" searchWhenChanged="true">
         <label>Site</label>
         <search>
-          <query>|inputlookup WA_settings.csv | search key=site | fields value source</query>
+          <query>|inputlookup WA_settings | fields value source | dedup value</query>
         </search>
         <fieldForLabel>value</fieldForLabel>
         <fieldForValue>value</fieldForValue>
@@ -63,14 +63,14 @@
       <table>
         <title>Goals</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE `datamodel`.site="$site$" `datamodel`.eventtype=pageview GROUPBY `datamodel`.http_session,`datamodel`.uri,host,`datamodel`.site
-| rename `datamodel`.uri AS uri
-| rename `datamodel`.site AS site
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview GROUPBY Web.http_session,Web.uri,host,Web.site
+| rename Web.uri AS uri
+| rename Web.site AS site
 | eval goal_id="$goal_id$"
 | lookup WA_goals site AS site goal_id AS goal_id OUTPUT start as goal_start end as goal_end
 | rex field=goal_start mode=sed "s/\*/%/g"
 | rex field=goal_end mode=sed "s/\*/%/g"
-| stats dc(`datamodel`.http_session) AS Sessions, count(eval(like(uri,goal_start))) AS Entries,count(eval(like(uri,goal_end))) AS Completed
+| stats dc(Web.http_session) AS Sessions, count(eval(like(uri,goal_start))) AS Entries,count(eval(like(uri,goal_end))) AS Completed
 | eval "Conversion Rate"=round(100*(Completed/Sessions),2)."%"
 | eval CompletionRate=round(100*(Completed/Entries),2)."%"
 | eval NonCompletionRate=round(100*((Entries-Completed)/Entries),2)."%"</query>
