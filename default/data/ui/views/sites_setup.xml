@@ -32,7 +32,7 @@
     | stats list(search) as search
     | eval search=mvjoin('search'," OR ")
     | fields search]
-| stats count as events by host, sourcetype,source,site
+| stats count as events,values(site) AS site, by host, sourcetype,source
 | fields sourcetype source site host events
 | search host=*$filter$* OR source=*$filter$*
 | lookup WA_settings source AS source host AS host OUTPUTNEW _key as key value AS site_lookup

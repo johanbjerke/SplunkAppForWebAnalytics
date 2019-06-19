@@ -3,7 +3,7 @@ disabled = 1
 sourcetype = iis
 crcSalt = <SOURCE>
 
-[monitor://$SPLUNK_HOME/etc/apps/SplunkAppForWebAnalytics/samples/apache.log]
+[monitor://$SPLUNK_HOME/etc/apps/SplunkAppForWebAnalytics/samples/access_combined.log]
 disabled = 1
 sourcetype = access_combined
 crcSalt = <SOURCE>

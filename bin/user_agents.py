@@ -8,8 +8,8 @@ LOG_LEVEL = logging.ERROR
 # LOG_LEVEL = logging.INFO
 # Error:
 # LOG_LEVEL = logging.ERROR
-
-LOG_FILENAME = 'TA-user_agents.log'
+SPLUNK_HOME = os.environ.get("SPLUNK_HOME")
+LOG_FILENAME = SPLUNK_HOME+'/var/log/splunk/TA-user_agents.log'
 LOG_FORMAT = "[%(asctime)s] %(name)s %(levelname)s: %(message)s"
 logging.basicConfig(filename=LOG_FILENAME,level=LOG_LEVEL,format=LOG_FORMAT)
 logger = logging.getLogger('user_agents')

@@ -48,7 +48,7 @@ If you plan on using the sourcetype aws:cloudfront:accesslogs, you need to insta
 <a href="https://splunkbase.splunk.com/app/1876/" target="_blank">https://splunkbase.splunk.com/app/1876/</a>
 </p>
 
-	                	<p>The app comes with three sets of sample data for Apache, IIS and IIS in the w3c format, ms:iis:default. You can enable these static sample inputs by going into <a href="../../manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a>
+	                	<p>The app comes with three sets of sample data for Apache, IIS and IIS in the w3c format, ms:iis:default. You can configure these sample inputs by going into <a href="../../manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a>
           </p>
 	               		<p>If your data is stored in an index that is not searched by default for your Splunk user, you need to add All non-internal indexes (or the specific index in question) to the Selected indexes in <a href="../../manager/SplunkAppForWebAnalytics/authorization/roles" target="_blank">Access controls -&gt; Roles -&gt; [ROLE NAME]</a>
           </p>
@@ -291,7 +291,12 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 	                    <p>THIS VERSION CONTAINS A BREAKING CHANGE. SEE BELOW. </p>
 	                    <p>From version 2.2.0, the app now uses the KV store to store the wesite configuration (collection WA_settings). This makes it a lot easier to edit and setup the website configuration step. This is something that many users have struggled with so I hope this change will make it easier during the initial setup. </p>
 	                    
-	                    <p>If you are upgrading from an old version <b>you need to take the mandatory step of migrating the old configuration from in the csv lookup to the KV store</b>. This is done by going to the <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">webite setup</a> page and clicking the "Migrate old config" button. You only need to do this once. </p>
+	                    <p>If you are upgrading from an old version <b>you need to take the mandatory step of migrating the old configuration from in the csv lookup to the KV store</b>.</p>
+                            <ol>
+                                <li>Go to the <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">webite setup</a> page</li>
+                            <li>Click the "Migrate old config" button. You only need to do this once. </li>
+                </ol>
+
 	         </div>
 	         </html>
       <html>
