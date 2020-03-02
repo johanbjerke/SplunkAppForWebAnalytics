@@ -1,0 +1,5 @@
+.DS_Store
+bin/*.pyc
+bin/splunklib/*.pyc
+*/local.meta
+.idea/*

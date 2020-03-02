@@ -25,8 +25,8 @@
       <table id="datacheck_table" depends="$filter$">
         <search id="available_search">
           <query>[| metadata type=sourcetypes
-    | search sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
-    | eval latest=lastTime, earliest=latest-3600
+    | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+    | eval latest=lastTime+3600, earliest=latest-3600
     | fields latest earliest sourcetype
     | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
     | stats list(search) as search
