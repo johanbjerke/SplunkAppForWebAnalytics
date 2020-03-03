@@ -18,7 +18,7 @@
 These steps needs to be done in order.
 <br/>
 <ol>
-<li>Get the data in. Use one of these sourcetype names "access_common", "access_combined", "iis", "ms:iis:auto", "ms:iis:default" "apache:access" or "aws:cloudfront:accesslogs".</li>
+<li>Get the data in. Use one of these sourcetype names "access_common", "access_combined", "iis", "ms:iis:auto", "ms:iis:default" "apache:access", "oracle:weblogic" or "aws:cloudfront:accesslogs".</li>
 <li>
               <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">Configure the sites that you want to monitor.</a>
             </li>
