@@ -3,11 +3,11 @@ from ua_parser import user_agent_parser
 
 # The following log levels are available:
 # Debug (NOISY!!!):
-LOG_LEVEL = logging.ERROR
+# LOG_LEVEL = logging.DEBUG
 # Info:
 # LOG_LEVEL = logging.INFO
 # Error:
-# LOG_LEVEL = logging.ERROR
+LOG_LEVEL = logging.ERROR
 SPLUNK_HOME = os.environ.get("SPLUNK_HOME")
 LOG_FILENAME = SPLUNK_HOME+'/var/log/splunk/TA-user_agents.log'
 LOG_FORMAT = "[%(asctime)s] %(name)s %(levelname)s: %(message)s"
