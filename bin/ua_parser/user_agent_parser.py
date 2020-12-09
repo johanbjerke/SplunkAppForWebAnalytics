@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Johan Bjerke, Splunk Inc
+# Modified 2020-12-09 - Python 3 compatibility
 """Python implementation of the UA parser."""
 
 __author__ = 'Lindsey Simon <elsigh@gmail.com>'
@@ -448,7 +450,7 @@ def GetFilters(user_agent_string, js_user_agent_string=None,
         'js_user_agent_v2': js_user_agent_v2,
         'js_user_agent_v3': js_user_agent_v3
     }
-    for key, value in filterdict.items():
+    for key, value in list(filterdict.items()):
         if value is not None and value != '':
             filters[key] = value
     return filters
