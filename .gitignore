@@ -4,3 +4,4 @@ bin/splunklib/*.pyc
 */local.meta
 .idea/*
 *.pyc
+*.bak
