@@ -395,7 +395,7 @@ user_agent_parsers:
   - regex: '(SznProhlizec)/(\d+)\.(\d+)(?:\.(\d+)|)'
     family_replacement: 'Seznam prohlížeč'
 
-  # Coc Coc browser, based on Chrome (used in Vietnam)
+  # Coc Coc browser, based on Chrome (used in Vietnam)
   - regex: '(coc_coc_browser)/(\d+)\.(\d+)(?:\.(\d+)|)'
     family_replacement: 'Coc Coc'
 
