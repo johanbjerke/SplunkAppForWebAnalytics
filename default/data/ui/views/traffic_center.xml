@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>Traffic Center</label>
   <description>This panel will assist you in finding the biggest sources of traffic coming to your site. Traditional web analytics tools (based on javascript collectors) will not capture traffic coming directly to specific URLs on your site. If you see spikes in traffic for a specific file or path it could mean somebody is hot-linking to resources on your site or you are affected by a script attack. Script attacks are common for admin login pages or for API endpoints.</description>
   <fieldset submitButton="false">

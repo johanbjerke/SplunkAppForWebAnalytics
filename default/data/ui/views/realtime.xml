@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>Real-Time</label>
   <description>Panels update every 5s</description>
   <search id="base1">

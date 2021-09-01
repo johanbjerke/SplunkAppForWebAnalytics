@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>Response times</label>
   <description>This panel will assist you in finding the slowest resources on your site. Your web server logs might not output the response time in the log by default. On IIS this is often enabled but on Apache and NGINX you need to add %D to the end of the log format settings of the server. More details on this here: http://httpd.apache.org/docs/current/mod/mod_log_config.html</description>
   <fieldset submitButton="false">

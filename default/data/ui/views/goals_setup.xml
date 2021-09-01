@@ -1,9 +1,6 @@
-<form script="tokenlinks.js">
+<form script="tokenlinks.js" version="1.1">
   <label>Goals Setup</label>
   <description>Goals are tracked website pageviews that can either have a defined start and finish (i.e. checkout process) or just a finish (order success). Select an existing goal to prefill the form or manually enter new data. The Goal ID should follow the format goal_x. Configured goals will allow you to measure conversion rate and funnel drop of rate on the Goals Overview page. Data from this form will be stored in the lookup file WA_goals.csv</description>
-  <search id="createlookup_settings">
-          <query>| outputlookup WA_goals.csv createinapp=t append=t</query>
-  		</search>
   <fieldset submitButton="false">
     <input type="time" token="field1" searchWhenChanged="true">
       <label>Time period</label>

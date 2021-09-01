@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>Traffic Search</label>
   <description>This panel provides an easy to use form to perform searches against the data model. Use it to pivot data around specific metrics and attributes. The resulting search can then be saved to your own dashboard.</description>
   <fieldset submitButton="true">
