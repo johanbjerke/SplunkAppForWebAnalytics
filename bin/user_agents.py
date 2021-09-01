@@ -2,36 +2,6 @@
 # Python 3
 import sys
 from splunk.appserver.mrsparkle.lib.util import make_splunkhome_path
-def add_to_sys_path(paths, prepend=False):
-    for path in paths:
-        if prepend:
-            if path in sys.path:
-                sys.path.remove(path)
-            sys.path.insert(0, path)
-        elif not path in sys.path:
-            sys.path.append(path)
-
-def add_python_version_specific_paths():
-    '''
-        Adds extra paths for libraries specific to Python2 or Python3,
-        determined at a runtime
-    '''
-    # We should not rely on core enterprise packages:
-    if sys.version_info >= (3, 0):
-        add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py3'])], prepend=True)
-    else:
-        add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py2'])], prepend=True)
-    # Common libraries like future
-    add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py23'])], prepend=True)
-    from six.moves import reload_module
-    try:
-        if 'future' in sys.modules:
-            import future
-            reload_module(future)
-    except Exception:
-        '''noop: future was not loaded yet'''
-add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py23', 'splunklib'])], prepend=True)
-add_python_version_specific_paths()
 
 import urllib
 import csv,re,os,numbers,itertools,logging
