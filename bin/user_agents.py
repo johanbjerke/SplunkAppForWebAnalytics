@@ -1,13 +1,49 @@
-import urllib,csv,re,sys,os,numbers,itertools,logging
+# Johan Bjerke, Splunk Inc
+# Python 3
+import sys
+from splunk.appserver.mrsparkle.lib.util import make_splunkhome_path
+def add_to_sys_path(paths, prepend=False):
+    for path in paths:
+        if prepend:
+            if path in sys.path:
+                sys.path.remove(path)
+            sys.path.insert(0, path)
+        elif not path in sys.path:
+            sys.path.append(path)
+
+def add_python_version_specific_paths():
+    '''
+        Adds extra paths for libraries specific to Python2 or Python3,
+        determined at a runtime
+    '''
+    # We should not rely on core enterprise packages:
+    if sys.version_info >= (3, 0):
+        add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py3'])], prepend=True)
+    else:
+        add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py2'])], prepend=True)
+    # Common libraries like future
+    add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py23'])], prepend=True)
+    from six.moves import reload_module
+    try:
+        if 'future' in sys.modules:
+            import future
+            reload_module(future)
+    except Exception:
+        '''noop: future was not loaded yet'''
+add_to_sys_path([make_splunkhome_path(['etc', 'apps', 'SplunkAppForWebAnalytics', 'lib', 'py23', 'splunklib'])], prepend=True)
+add_python_version_specific_paths()
+
+import urllib
+import csv,re,os,numbers,itertools,logging
 from ua_parser import user_agent_parser
 
 # The following log levels are available:
 # Debug (NOISY!!!):
-LOG_LEVEL = logging.ERROR
+# LOG_LEVEL = logging.DEBUG
 # Info:
 # LOG_LEVEL = logging.INFO
 # Error:
-# LOG_LEVEL = logging.ERROR
+LOG_LEVEL = logging.ERROR
 SPLUNK_HOME = os.environ.get("SPLUNK_HOME")
 LOG_FILENAME = SPLUNK_HOME+'/var/log/splunk/TA-user_agents.log'
 LOG_FORMAT = "[%(asctime)s] %(name)s %(levelname)s: %(message)s"
@@ -40,14 +76,14 @@ if __name__ == '__main__':
         
         # We only care about the cs_user_agent field - everything else is filled in
         http_user_agent = row[idx]
-        useragent = urllib.unquote_plus(http_user_agent)
+        useragent = urllib.parse.unquote_plus(http_user_agent)
         logger.debug('found useragent %s' % http_user_agent)
         
         logger.debug('sending to ua-parser')
         results = []
         try:
-	    results = user_agent_parser.Parse(http_user_agent)
-        except Exception, err:
+	        results = user_agent_parser.Parse(http_user_agent)
+        except Exception as err:
             logger.error(err)
             continue
         logger.debug('back from ua-parser')
@@ -84,7 +120,7 @@ if __name__ == '__main__':
         # OS
         if results['os']['family'] is not None:
             if results['os']['family'] != 'Other':
-	        forSplunk['ua_os_family'] = results['os']['family']
+	            forSplunk['ua_os_family'] = results['os']['family']
         if results['os']['major'] is not None:
             forSplunk['ua_os_major'] = results['os']['major']
         if results['os']['minor'] is not None:
