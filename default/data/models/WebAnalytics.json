@@ -1,7 +1,7 @@
 {
-    "modelName": "Web",
-    "displayName": "Web",
-    "description": "Web Data Model",
+    "modelName": "WebAnalytics",
+    "displayName": "WebAnalytics",
+    "description": "Web Analytics Data Model",
     "objectSummary": {
         "Event-Based": 3,
         "Transaction-Based": 0,
@@ -1022,7 +1022,7 @@
             ],
             "constraints": [
                 {
-                    "search": "tag=web",
+                    "search": "tag=webanalytics",
                     "owner": "Web"
                 }
             ],
