@@ -165,7 +165,7 @@
       <table>
         <title>Web Server Client Errors (400s) by Request</title>
         <search>
-          <query>tag=web status&gt;=400 status&lt;500 
+          <query>tag=`datamodel` status&gt;=400 status&lt;500 
 | chart count over http_request by status 
 | addtotals 
 | sort -Total</query>
@@ -184,7 +184,7 @@
       <table>
         <title>Web Server Errors (500s) by Request</title>
         <search>
-          <query>tag=web status&gt;=500 
+          <query>tag=`datamodel` status&gt;=500 
 | chart count over http_request by status 
 | addtotals 
 | sort -Total</query>
@@ -205,7 +205,7 @@
       <table>
         <title>Web Server Client Errors (400s) by Referrer</title>
         <search>
-          <query>tag=web status&gt;=400 status&lt;500 
+          <query>tag=`datamodel` status&gt;=400 status&lt;500 
 | chart count over http_referer by status 
 | addtotals 
 | sort -Total</query>
@@ -224,7 +224,7 @@
       <table>
         <title>Web Server Errors (500s) by Referrer</title>
         <search>
-          <query>tag=web status&gt;=500 
+          <query>tag=`datamodel` status&gt;=500 
 | chart count over http_referer by status 
 | addtotals 
 | sort -Total</query>
