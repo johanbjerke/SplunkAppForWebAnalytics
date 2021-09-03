@@ -1,72 +1,93 @@
-<dashboard script="dashboard.js" stylesheet="dashboard.css">
+<dashboard script="tableIconRenderer.js" stylesheet="dashboard.css" version="1.1">
   <label>Documentation</label>
   <search ref="Data Model Acceleration Details" id="globalDMSearch"></search>
-  <search id="createlookup_goals">
-    <query>| outputlookup WA_goals.csv createinapp=t append=t</query>
-  </search>
   <row>
     <panel>
       <html>
-	        	<h2>Installation instructions</h2>
-
-
-	        	<html>
-    	  <h3>TL;DR</h3>
-					<p>
-<b> IF YOU HAVE UPGRADED TO VERSION 2.2 OR ABOVE FROM VERSION 2.1 OR BELOW. PLEASE FOLLOW THE MANDATORY AND SIMPLE MIGRATION INSTRUCTIONS. SEE PARAGRAPH FURTHER DOWN.</b>
-</p>
-These steps needs to be done in order.
-<br/>
+	        	<h1>Installation instructions</h1>
+    	  <h2>Short Version</h2>
+<h2>These steps needs to be done in order.</h2>
 <ol>
-<li>Get the data in. Use one of these sourcetype names "access_common", "access_combined", "iis", "ms:iis:auto", "ms:iis:default" "apache:access", "oracle:weblogic" or "aws:cloudfront:accesslogs".</li>
-<li>
-              <a href="sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank">Configure the sites that you want to monitor.</a>
-            </li>
-<li>Run  <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank">"Generate Session"</a> and <a href="report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank">"Generate pages"</a> lookup searches.</li>
-<li>
-              <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Enable Data Model Acceleration for Web datamodel.</a>
-            </li>
-<li>
-              <a href="goals_setup?form.field1.earliest=%40y&amp;form.field1.latest=now&amp;form.startswith=&lt;No%20start&gt;&amp;earliest=0&amp;latest=" target="_blank">Configure goals</a> (Optional)</li>
+
+<li>Get the data in. Use one of these sourcetype names</li>
+<ul>
+<li>access_common</li>
+<li>access_combined</li>
+<li>iis</li>
+<li>ms:iis:auto</li>
+<li>ms:iis:default</li>
+<li>apache:access</li>
+<li>apache:access:kv</li>
+<li>oracle:weblogic</li>
+<li>aws:cloudfront:accesslogs</li>
+</ul>
+<li>Modify the eventtype called <a href="/manager/SplunkAppForWebAnalytics/saved/eventtypes/web-traffic?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">web-traffic</a> so it points to the correct indexes for the web logs.</li>
+<li><a href="/app/SplunkAppForWebAnalytics/sites_setup?form.filter=*&amp;earliest=0&amp;latest=" target="_blank" rel="noopener">Configure the sites that you want to monitor.</a></li>
+<li>Run <a href="/app/SplunkAppForWebAnalytics/report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520user%2520sessions" target="_blank" rel="noopener">"Generate Session"</a> and <a href="/app/SplunkAppForWebAnalytics/report?s=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fsaved%2Fsearches%2FGenerate%2520pages" target="_blank" rel="noopener">"Generate pages"</a> lookup searches.</li>
+<li><a href="/manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics&amp;visible=false" target="_blank" rel="noopener">Enable Data Model Acceleration for webanalytics datamodel.</a></li>
 </ol>
-</html>
-
-	                <input id="_key" type="hidden"/>
-
-					<div>
-	                    <h3>1. Import web server log data</h3>
-	                    <p class="" id="1-loading">The Splunk App for Web Analytics currently supports data from Apache, IIS and AWS Cloudfront logs. Make sure you use the sourcetypes access_common, access_combined, iis,ms:iis:auto, ms:iis:default apache:access or aws:cloudfront:accesslogs for this data. If you already have data in Splunk under a different sourcetype you can use <a href="../../manager/launcher/data/props/sourcetype-rename?ns=SplunkAppForWebAnalytics&amp;pwnr=-&amp;search=&amp;app_only=1" target="_blank">sourcetype renaming</a> or by modifying the <a href="../../manager/launcher/saved/eventtypes?ns=SplunkAppForWebAnalytics&amp;sort_dir=desc&amp;search=web-traffic&amp;sort_key=name&amp;app_only=True" target="_blank">eventtype web-traffic</a> to include the names of your sourcetypes.</p>
-	                    <p>If you plan on using the sourcetype apache:access, you need to install the prerequisite Add-on as this app builds on top of the base field extractions from the Add-on for Apache:<br/>
-<a href="https://splunkbase.splunk.com/app/3186/" target="_blank">https://splunkbase.splunk.com/app/3186/</a>
-</p>
-<p>
-If you plan on using the sourcetypes ms:iis:auto or ms:iis:default, you need to install the prerequisite Add-on as this app builds on top of the base field extractions from the Splunk Add-on for IIS:<br/>
-<a href="https://splunkbase.splunk.com/app/3185/" target="_blank">https://splunkbase.splunk.com/app/3185/</a>
-</p>
-<p>
-If you plan on using the sourcetype aws:cloudfront:accesslogs, you need to install the prerequisite Add-on as this app builds on top of the base field extractions from the Splunk Add-on for Amazon Web Services:<br/>
-<a href="https://splunkbase.splunk.com/app/1876/" target="_blank">https://splunkbase.splunk.com/app/1876/</a>
-</p>
-
-	                	<p>The app comes with three sets of sample data for Apache, IIS and IIS in the w3c format, ms:iis:default. You can configure these sample inputs by going into <a href="../../manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a>
-          </p>
-	               		<p>If your data is stored in an index that is not searched by default for your Splunk user, you need to add All non-internal indexes (or the specific index in question) to the Selected indexes in <a href="../../manager/SplunkAppForWebAnalytics/authorization/roles" target="_blank">Access controls -&gt; Roles -&gt; [ROLE NAME]</a>
-          </p>
-	                </div>
+<div>
+<h2>Long Version</h2>
+<h3>1. Import web server log data</h3>
+<p class="">The Splunk App for Web Analytics currently supports data from Apache, IIS. Oracle Weblogic and AWS Cloudfront logs. Make sure you use the sourcetype names from this list. </p>
+<ul>
+<li>access_common</li>
+<li>access_combined</li>
+<li>iis</li>
+<li>ms:iis:auto</li>
+<li>ms:iis:default</li>
+<li>apache:access</li>
+<li>apache:access:kv</li>
+<li>oracle:weblogic</li>
+<li>aws:cloudfront:accesslogs</li>
+</ul>
+<p id="1-loading" class="">If you already have data in Splunk under a different sourcetype you can use <a href="/manager/launcher/data/props/sourcetype-rename?ns=SplunkAppForWebAnalytics&amp;pwnr=-&amp;search=&amp;app_only=1" target="_blank" rel="noopener">sourcetype renaming</a> or by modifying the <a href="/manager/launcher/saved/eventtypes?ns=SplunkAppForWebAnalytics&amp;sort_dir=desc&amp;search=web-traffic&amp;sort_key=name&amp;app_only=True" target="_blank" rel="noopener">eventtype web-traffic</a> to include the names of your sourcetypes.</p>
+<p class="">Depending on the sourcetypes there are some prerequisite add-on with field extractions you need to download and install separately</p>
+<table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
+<tbody>
+<tr>
+<th>Sourcetype</th>
+<th>Add-on</th>
+</tr>
+<tr>
+<td>apache:access</td>
+<td><a href="https://splunkbase.splunk.com/app/3186/" target="_blank" rel="noopener">https://splunkbase.splunk.com/app/3186/</a></td>
+</tr>
+<tr>
+<td>apache:access:kv</td>
+<td><a href="https://splunkbase.splunk.com/app/3186/" target="_blank" rel="noopener">https://splunkbase.splunk.com/app/3186/</a></td>
+</tr>
+<tr>
+<td>ms:iis:auto</td>
+<td><a href="https://splunkbase.splunk.com/app/3185/" target="_blank" rel="noopener">https://splunkbase.splunk.com/app/3185/</a></td>
+</tr>
+<tr>
+<td>ms:iis:default</td>
+<td><a href="https://splunkbase.splunk.com/app/3185/" target="_blank" rel="noopener">https://splunkbase.splunk.com/app/3185/</a></td>
+</tr>
+<tr>
+<td>aws:cloudfront:accesslogs</td>
+<td><a href="https://splunkbase.splunk.com/app/1876/" target="_blank" rel="noopener">https://splunkbase.splunk.com/app/1876/</a></td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<p>The app comes with three sets of sample data for Apache, IIS and IIS in the w3c format, ms:iis:default. You can configure these sample inputs by going into <a href="/manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank" rel="noopener">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a></p>
+<p>Modify the eventtype called <a href="/manager/SplunkAppForWebAnalytics/saved/eventtypes/web-traffic?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">web-traffic</a> so it points to the correct indexes for the web logs.</p>
+</div>
 
 			</html>
       <table id="datacheck_table">
-        <title>Web Server Log Data check (tag=web | head 5)</title>
+        <title>Web Server Log Data check (tag=webanalytics | head 5)</title>
         <search>
           <query>
-				            tag=web | head 5 | stats count AS Events | eval Check=Events
+				            tag=`datamodel` | head 5 | stats count AS Events | eval Check=Events
 				        </query>
-          <earliest>-1y@y</earliest>
+          <earliest>-1d@d</earliest>
           <latest>now</latest>
         </search>
       </table>
       <html>
-	                <hr/>
 
 	                <div>
 	                    <h3>2. Configure websites</h3>
@@ -76,7 +97,7 @@ If you plan on using the sourcetype aws:cloudfront:accesslogs, you need to insta
 	                   	</p>
 	                   	<p>
 	                   		<h4>No wildcards</h4>
-	                   	<table class="documentation_example_table table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   	<table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Host</th>
@@ -97,7 +118,7 @@ If you plan on using the sourcetype aws:cloudfront:accesslogs, you need to insta
 	                  <br/>
 	                  <p>
 	                   <h4>With wildcards</h4>
-	                   	<table class="documentation_example_table table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   	<table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Host</th>
@@ -118,7 +139,7 @@ If you plan on using the sourcetype aws:cloudfront:accesslogs, you need to insta
         <title>Website Configuration check</title>
         <search>
           <query>[| metadata type=sourcetypes
-    | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+    | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="apache:access:kv" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
     | eval latest=lastTime+3600, earliest=latest-3600
     | fields latest earliest sourcetype
     | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
@@ -168,21 +189,9 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
       <html>
 	                <div>
 	                    <h3>4. Choose data model and enable data model acceleration</h3>
-	                    <p class="" id="4-loading">The Splunk App for Web Analytics uses data model acceleration extensively to power the dashboards. The app allows you to select the datamodel name you want to use. By default the app uses the datamodel "Web". I you have a naming conflict for this datamodel (there is a Web data model alread in the CIM app which is slightly different to this one), you can choose to rename it. See additional instructions below for using a custom datamodel name. </p>
-
-	                    <p>Once the lookups in the previous step has completed you should <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">enable acceleration for the data model "Web" (or the custom name you have chosen)</a>. The data model can be found under <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Settings-&gt;Data models</a>. Set the summary range appropriately depending on how long you want to keep the data, &gt; 1 Month. The data model is updated every 10 minutes in order for the sessions to get picked up properly. The data model acceleration needs to finish before you will see any data in any dashboard except the "Real-Time" dashboard which uses raw log data as source. That means that you initially might not see data until the data model has finished building. This could initially take many hours depending on how much data it is trying to build. </p>
-	                    <p>If Events are showing 0 after install or upgrade you might have to rebuild the data model.</p>
-
-	                    <h4>Using a custom datamodel name</h4>
-	                    <p>
-	                      <ol>
-<li>Go to the <a href="../../manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank">Settings-&gt;Data models</a> page and click Edit-&gt;Clone for the datamodel Web inside the SplunkAppForWebAnalytics app.</li>
-<li>Give the datamodel a new name, set the same name for the title and the ID fields, i.e. "WebAnalytics". Make sure you also set the Permissions to Clone.</li>
-<li>Update the settings macro that defines the datamodel name. Use the same name as in the previous step, i.e. "WebAnalytics" or similar.<a href="../../manager/SplunkAppForWebAnalytics/admin/macros/datamodel?uri=%2FservicesNS%2Fnobody%2FSplunkAppForWebAnalytics%2Fadmin%2Fmacros%2Fdatamodel&amp;ns=SplunkAppForWebAnalytics&amp;action=edit" target="_blank"> You can find the macro here.</a>
-              </li>
-  </ol>
-
-	                    </p>
+	                    <p id="4-loading" class="">The Splunk App for Web Analytics uses data model acceleration extensively to power the dashboards. The app allows you to select the datamodel name you want to use. By default the app uses the datamodel "webanalytics". </p>
+<p>Once the lookups in the previous step has completed you should <a href="/manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank" rel="noopener">enable acceleration for the data model "webanalytics" (or the custom name you have chosen)</a>. The data model can be found under <a href="/manager/SplunkAppForWebAnalytics/data_model_manager?app=SplunkAppForWebAnalytics" target="_blank" rel="noopener">Settings-&gt;Data models</a>. Set the summary range appropriately depending on how long you want to keep the data, &gt; 1 Month. The data model is updated every 10 minutes in order for the sessions to get picked up properly. The data model acceleration needs to finish before you will see any data in any dashboard except the "Real-Time" dashboard which uses raw log data as source. That means that you initially might not see data until the data model has finished building. This could initially take many hours depending on how much data it is trying to build.</p>
+<p>If Events are showing 0 after install or upgrade you might have to rebuild the data model. </p>
 	                </div>
 	     	</html>
       <table id="datacheck_table_3">
@@ -232,7 +241,7 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 
 	                    <p>
 	                   <h4>Example goal configuration for the checkout process of a Magento eCommerce website</h4>
-	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   	<table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Goal ID</th>
@@ -252,7 +261,7 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 	                   <br/>
 	                   <p>
 	                   <h4>Example goal configuration for the checkout process of a Woocommerce eCommerce website</h4>
-	                   	<table class="table table-chrome table-striped wrapped-results  table-drilldown table-drilldown-cell">
+	                   	<table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
 	                   		<tr>
 	                   			<th>Site</th>
 	                   			<th>Goal ID</th>
@@ -278,12 +287,71 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 	                </div>
 	      	</html>
       <html>
-	                 <div>
+					 <div class="panel-element-row">
+<div id="content8" class="dashboard-element html dashboard-element-html" data-cid="view11928" data-view="views/dashboard/element/Html" data-render-time="0.001">
+<div class="panel-body html">
+<h2>Data model rebuild instructions</h2>
+<ol>
+<li>Disable Data Model acceleration for data model "webanalytics".</li>
+<li>Run the "Generate user sessions" search.</li>
+<li>Once the session generation search is complete. Re-enable data model acceleration on the Data Models configuration page.</li>
+<li>Expand data model "webanalytics" by clicking on the arrow on the left hand side. Click "Rebuild".</li>
+</ol>
+<h2>Troubleshooting</h2>
+<h3>Use the Splunk Community</h3>
+<p><a href="https://answers.splunk.com/app/questions/2699.html" target="_blank" rel="noopener">Splunk Answers thread on Splunk App for Web Analytics</a>. A lot of the problems customers have with the app have already been solved.</p>
+<h3>The lookup searches are not returning any data</h3>
+<p class="">In the context of the app, try and do the search for:</p>
+<blockquote>tag=webanalytics</blockquote>
+<p>Based on the output of this search check the following</p>
+<h4>1. No data returned</h4>
+<p>If this is not returning any results I suspect you are not seeing the data because it is stored in a non-default index and the user in Splunk does not search in non-default indexes automatically. Another issue might be that you are not using any of the pre-configured sourcetypes. See Setup point 1 above.</p>
+<h4>2. Site field not present</h4>
+<p>If this is returning results, double check that each entry has the "site" field populated. It's crucial that this field exists in your data. See Setup point 2 above.</p>
+<h4>3. File field not present</h4>
+<p>Another field that is known to cause problems is the "file" field. This needs to be present in your field extractions and if it is not, you will not see the "eventtype=pageview" which is necessary for the app to work. Make sure this is extracted correctly.</p>
+<h4>4. eventtype=pageview not present in the data</h4>
+<p>The app relies on at least some events having this eventtype set. This eventtype is what we use to differentiate beween an asset load and an actual pageview. Try and debug the eventtype configurations to figure out why it is not set. </p>
+<h3>All or some dashboards are returning "No results found"</h3>
+<p class="">As the app relies heavily on data model accelerations you will not see anything in any dashboards (except the "Real-Time" ones) until this acceleration has completed. Initially this could take a while. There is a <a href="/app/SplunkAppForWebAnalytics/data_model_audit" target="_blank" rel="noopener">"Data Model Audit"</a> dashboard that will tell you if the acceleration is complete or not.</p>
+</div>
+</div>
+</div>
+</html>
+<table id="datacheck_table_4">
+        <title>Data Model search fields check (-24h)</title>
+        <search>
+          <query>| datamodel `datamodel` search
+| stats count AS "Events returned", dc(file) AS "file field has values", dc(site) AS "site field has values", dc(eval(if(eventtype="pageview",1,null()))) AS "eventtype=pageview exists"
+| transpose
+| rename column AS "Check item", "row 1" AS Count
+| eval Check=Count</query>
+          <earliest>-24h</earliest>
+          <latest>0</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </table>
+	  <table id="datacheck_table_5">
+        <title>Raw data search fields check (-24h)</title>
+        <search>
+          <query>tag=`datamodel`
+| stats count AS "Events returned", dc(file) AS "file field has values", dc(site) AS "site field has values", dc(eval(if(eventtype="pageview",1,null()))) AS "eventtype=pageview exists"
+| transpose
+| rename column AS "Check item", "row 1" AS Count
+| eval Check=Count</query>
+          <earliest>-24h</earliest>
+          <latest>0</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </table>
+
+
+<html>
 	                    <h2>Upgrade instructions</h2>
 	                    <ol>
 							<li>Install app - Select "Upgrade App" checkbox.</li>
 						</ol>
-	                </div>
+
 	        </html>
       <html>
 	        <div>
@@ -321,45 +389,8 @@ isnotnull(site) AND isnotnull(site_lookup) AND site!=site_lookup,"Maybe",
 	                	<p>Restart Splunk after this is done. </p>
 	                </div>
 	        </html>
-      <html>
-
-	                 <div>
-	                    <h2>Data model rebuild instructions</h2>
-	                    <ol>
-							<li>Disable Data Model acceleration for data model "Web".</li>
-							<li>Run the "Generate user sessions" search.</li>
-							<li>Once the session generation search is complete. Re-enable data model acceleration on the Data Models configuration page.</li>
-							<li>Expand data model "Web" by clicking on the arrow on the left hand side. Click "Rebuild".</li>
-						</ol>
-	                </div>
-	        </html>
-      <html>
-
-	                 <div>
-	                    <h2>Troubleshooting</h2>
-	                    <h3>Use the Splunk Community</h3>
-	                    <a target="_blank" href="https://answers.splunk.com/app/questions/2699.html">Splunk Answers thread on Splunk App for Web Analytics</a>. A lot of the problems customers have with the app have already been solved.
-	                    <h3>The lookup searches are not returning any data</h3>
-	                    <p class="">In the context of the app, try and do the search for:</p>
-	                    <blockquote>tag=web</blockquote>
-
-						 Based on the output of this search check the following
-						<p>
-						1. No data returned<br />
-						If this is not returning any results I suspect you are not seeing the data because it is stored in a non-default index and the user in Splunk does not search in non-default indexes automatically. Another issue might be that you are not using any of the pre-configured sourcetypes. See Setup point 1 above.
-						</p>
-						2. Site field not present<br />
-						If this is returning results, double check that each entry has the "site" field populated. It's crucial that this field exists in your data. See Setup point 2 above.
-						<p>
-						3. File field not present<br />
-						Another field that is known to cause problems is the "file" field. This needs to be present in your field extractions and if it is not, you will not see the "eventtype-=pageview" which is necessary for the app to work. Make sure this is extracted correctly.
-						</p>
-
-	                	<h3>All or some dashboards are returning "No results found"</h3>
-	                	<p class="">As the app relies heavily on data model accelerations you will not see anything in any dashboards (except the "Real-Time" ones) until this acceleration has completed. Initially this could take a while. There is a <a href="data_model_audit" target="_blank">"Data Model Audit"</a> dashboard that will tell you if the acceleration is complete or not. </p>
-
-	                </div>
-	        </html>
+      
+    
     </panel>
   </row>
 </dashboard>

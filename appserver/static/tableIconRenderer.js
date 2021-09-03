@@ -40,7 +40,7 @@ require([
 
 
 
-    for(var c = 1; c <= 3; c++){
+    for(var c = 1; c <= 5; c++){
     var table='datacheck_table_'+c
     if (mvc.Components.get(table)) {
         mvc.Components.get(table).getVisualization(function(tableView){

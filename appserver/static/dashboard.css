@@ -28,14 +28,18 @@ td.icon-inline {
 #datacheck_table th[data-sort-key=Check],#datacheck_table th[data-sort-key=Configured],
 #datacheck_table_1 th[data-sort-key=Check],#datacheck_table_1 th[data-sort-key=Configured],
 #datacheck_table_2 th[data-sort-key=Check],#datacheck_table_2 th[data-sort-key=Configured],
-#datacheck_table_3 th[data-sort-key=Check],#datacheck_table_3 th[data-sort-key=Configured]
+#datacheck_table_3 th[data-sort-key=Check],#datacheck_table_3 th[data-sort-key=Configured],
+#datacheck_table_4 th[data-sort-key=Check],#datacheck_table_3 th[data-sort-key=Configured],
+#datacheck_table_5 th[data-sort-key=Check],#datacheck_table_3 th[data-sort-key=Configured]
 {
     width:70px;
 }
 #datacheck_table th[data-sort-key=Reason],
 #datacheck_table_1 th[data-sort-key=Reason],
 #datacheck_table_2 th[data-sort-key=Reason],
-#datacheck_table_3 th[data-sort-key=Reason]
+#datacheck_table_3 th[data-sort-key=Reason],
+#datacheck_table_4 th[data-sort-key=Reason],
+#datacheck_table_5 th[data-sort-key=Reason]
 {
     width:200px;
     min-width:200px;
@@ -43,7 +47,9 @@ td.icon-inline {
 #datacheck_table th[data-sort-key=source],
 #datacheck_table_1 th[data-sort-key=source],
 #datacheck_table_2 th[data-sort-key=source],
-#datacheck_table_3 th[data-sort-key=source]
+#datacheck_table_3 th[data-sort-key=source],
+#datacheck_table_4 th[data-sort-key=source],
+#datacheck_table_5 th[data-sort-key=source]
 {
     width:100px;
 }
