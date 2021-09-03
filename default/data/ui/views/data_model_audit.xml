@@ -65,4 +65,17 @@
       </table>
     </panel>
   </row>
+  <row>
+    <panel>
+      <title>Datamodel Acceleration SPL String (useful for troubleshooting)</title>
+      <table>
+        <search>
+          <query>| datamodel `datamodel` acceleration_search_string</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
 </dashboard>
