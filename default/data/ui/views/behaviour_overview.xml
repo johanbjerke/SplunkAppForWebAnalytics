@@ -1,4 +1,4 @@
-<form>
+<form version="1.1">
   <label>Behaviour Overview</label>
   <search id="TimeComparison">
     <query>| makeresults count=1
@@ -60,14 +60,21 @@
 | eval ImmediatePeriodCompare=$ImmediatePeriodCompare$
 | `addTimeCompareWindow`
 | map search="
+| union [
+| tstats summariesonly=t count AS Count  FROM datamodel=`datamodel` WHERE Web.site="*" Web.eventtype=pageview
+(earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time span=1h
+][
 | tstats summariesonly=t count AS Count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview
-(earliest=$$earliestCompare$$ latest=$$latestCompare$$) OR (earliest=$$info_min_time$$ latest=$$info_max_time$$) GROUPBY _time $span$
+(earliest=$$earliestCompare$$ latest=$$latestCompare$$) GROUPBY _time $span$
+]
 | timechart sum(Count) AS Count $span$
 | timewrap \"$$windowLength$$\"
     | eval window=$$window$$, windowLength=\"$$windowLength$$\", earliestCompare=$$earliestCompare$$, latestCompare=$$latestCompare$$, info_min_time=$$info_min_time$$, info_max_time=$$info_max_time$$
     | fields Count window windowLength earliestCompare latestCompare info_min_time info_max_time $$FieldnameCurrentPeriod$$ $$FieldnameComparePeriod$$
 "
-| table _time Count_latest* Count*_before</query>
+| table _time Count_latest* Count*_before
+| fillnull value=0
+</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -92,6 +99,42 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Mobile VS Desktop</title>
+        <search>
+          <query>| tstats summariesonly=t count AS Count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview GROUPBY _time $span$,Web.http_session,Web.ua_mobile
+| timechart count(eval(len('Web.ua_mobile')=0)) AS Non-Mobile,sum(eval('Web.ua_mobile'!="")) AS Mobile $span$</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">200</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
