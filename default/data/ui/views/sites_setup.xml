@@ -1,9 +1,6 @@
-<form script="dashboard.js,collections.js" stylesheet="dashboard.css">
+<form script="tableIconRenderer.js,collections.js" stylesheet="dashboard.css" version="1.1">
   <label>Websites</label>
   <description>Websites are configured from a combination of the host and the source field. Each event with that unique combination will be tagged with the corresponding website name in the field "site". The "site" fields should match your domain name, i.e. "www.mydomain.com". Click the tables below to prefill the setup form. You can use wildcards (*) in the Source field to select multiple files matching a pattern. The data in the setup form will be stored in the lookup file called WA_settings.csv. You can also edit this file manually.</description>
-  <search id="createlookup_settings">
-    <query>| outputlookup WA_settings.csv createinapp=t append=t</query>
-  </search>
   <fieldset submitButton="false"></fieldset>
   <row>
     <panel>
@@ -24,8 +21,8 @@
       </html>
       <table id="datacheck_table" depends="$filter$">
         <search id="available_search">
-          <query>[| metadata type=sourcetypes
-    | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
+          <query>[| metadata type=sourcetypes index=*
+    | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="apache:access:kv" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
     | eval latest=lastTime+3600, earliest=latest-3600
     | fields latest earliest sourcetype
     | eval search="(sourcetype="+sourcetype+" latest="+latest+" earliest="+earliest+")"
