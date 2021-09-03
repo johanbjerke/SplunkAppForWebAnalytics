@@ -1,6 +1,6 @@
 {
-    "modelName": "WebAnalytics",
-    "displayName": "WebAnalytics",
+    "modelName": "webanalytics",
+    "displayName": "webanalytics",
     "description": "Web Analytics Data Model",
     "objectSummary": {
         "Event-Based": 3,
@@ -1018,11 +1018,33 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "if(eventtype==\"ua-bot\",'ua_family', NULL)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "dm_version",
+                            "owner": "Web",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "dm_version",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "mvlii4fspv",
+                    "owner": "Web",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "\"2.3.0\""
                 }
             ],
             "constraints": [
                 {
-                    "search": "tag=webanalytics",
+                    "search": "tag=`datamodel`",
                     "owner": "Web"
                 }
             ],
@@ -1766,7 +1788,7 @@
             "calculations": [],
             "constraints": [],
             "lineage": "Untagged_Web",
-            "baseSearch": "http sourcetype!=stash NOT (tag=web)"
+            "baseSearch": "http sourcetype!=stash NOT (tag=`datamodel`)"
         }
     ],
     "objectNameList": [
