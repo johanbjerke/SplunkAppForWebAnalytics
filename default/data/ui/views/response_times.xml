@@ -11,6 +11,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+      <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
@@ -132,7 +133,7 @@
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
-        <option name="charting.axisTitleY.text">Mb</option>
+        <option name="charting.axisTitleY.text">Ms</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>

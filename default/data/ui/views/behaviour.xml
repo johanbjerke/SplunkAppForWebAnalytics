@@ -10,6 +10,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+     <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
