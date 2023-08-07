@@ -10,6 +10,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+      <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
@@ -27,21 +28,38 @@
       <choice value="*">All</choice>
       <default>*</default>
     </input>
+    <input type="dropdown" token="host" searchWhenChanged="true">
+      <label>Server</label>
+      <search>
+        <query>| metadata type=hosts `webanalytics_sourcetypes`
+| dedup host
+| lookup WA_settings host AS host OUTPUTNEW value AS site
+| table host site
+| search site="$site$" </query>
+      </search>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <choice value="*">All</choice>
+      <default>*</default>
+    </input>
     <input type="multiselect" token="field" searchWhenChanged="true">
       <label>Field</label>
-      <choice value="http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip">All</choice>
-      <choice value="http_user_agent">http_user_agent</choice>
-      <choice value="ua_family,Web.ua_major,Web.ua_minor">ua_browser</choice>
-      <choice value="clientip">clientip</choice>
-      <valuePrefix>Web.</valuePrefix>
+      <choice value="Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip,host">All</choice>
+      <choice value="host">Server</choice>
+      <choice value="Web.http_user_agent">http_user_agent</choice>
+      <choice value="Web.ua_family,Web.ua_major,Web.ua_minor">ua_browser</choice>
+      <choice value="Web.clientip">clientip</choice>
       <delimiter>,</delimiter>
-      <default>"http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip"</default>
     </input>
     <input type="radio" token="pageviews" searchWhenChanged="true">
       <label>Pageviews only</label>
       <choice value="Web.eventtype=&quot;pageview&quot;">Yes</choice>
       <choice value="">No</choice>
       <default>No</default>
+    </input>
+    <input type="text" token="uri" searchWhenChanged="true">
+      <label>Request URL</label>
+      <default>*</default>
     </input>
   </fieldset>
   <row>
@@ -77,13 +95,14 @@
       <chart>
         <title>Problem Key-Value pairs - DM</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE ($status_y$) OR ($status_x$) $pageviews$ GROUPBY Web.status,$field$ 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" Web.uri="$uri$" ($status_y$) OR ($status_x$) $pageviews$ host="$host$" GROUPBY Web.status,$field$ 
 | strcat "http_user_agent::" Web.http_user_agent pair_http_user_agent 
 | strcat "ua_browser::" Web.ua_family "_" Web.ua_major "." Web.ua_minor pair_ua_browser 
 | strcat "http_request::" Web.uri pair_http_request 
 | strcat "http_referer::" Web.http_referer pair_http_referer 
 | strcat "clientip::" Web.clientip pair_clientip 
-| eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip) 
+| strcat "Server::" host pair_host 
+| eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip,pair_host) 
 | chart sum(count) over pairs by Web.status 
 | addtotals 
 | addtotals 3* fieldname="All 300s" 
@@ -135,11 +154,12 @@
       <table>
         <title>Web Errors Field-Value pairs</title>
         <search>
-          <query>| tstats count FROM datamodel=`datamodel` WHERE Web.status&gt;=400 GROUPBY Web.status,Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip 
+          <query>| tstats count FROM datamodel=`datamodel` WHERE  Web.site="$site$" host="$host$" Web.status&gt;=400  Web.uri="$uri$" GROUPBY Web.status,Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip host
 | strcat "http_user_agent::" Web.http_user_agent pair_http_user_agent 
 | strcat "ua_browser::" Web.ua_family "_" Web.ua_major "." Web.ua_minor pair_ua_browser 
 | strcat "clientip::" Web.clientip pair_clientip 
-| eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip) 
+| strcat "Server::" host pair_host
+| eval pairs=mvappend(pair_http_user_agent,pair_ua_browser,pair_http_request,pair_http_referer,pair_clientip,pair_host) 
 | chart count over pairs by Web.status 
 | addtotals 
 | sort 100 -Total 
@@ -165,8 +185,10 @@
       <table>
         <title>Web Server Client Errors (400s) by Request</title>
         <search>
-          <query>tag=`datamodel` status&gt;=400 status&lt;500 
-| chart count over http_request by status 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status&gt;=400 Web.status&lt;500)  Web.uri="$uri$" GROUPBY Web.uri,Web.status 
+| rename Web.* AS *
+| chart sum(count) AS count over uri by status 
+| rename uri AS http_request
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -184,8 +206,10 @@
       <table>
         <title>Web Server Errors (500s) by Request</title>
         <search>
-          <query>tag=`datamodel` status&gt;=500 
-| chart count over http_request by status 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status&gt;=500)  Web.uri="$uri$" GROUPBY Web.uri,Web.status 
+| rename Web.* AS *
+| chart sum(count) AS count over uri by status 
+| rename uri AS http_request
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -205,8 +229,9 @@
       <table>
         <title>Web Server Client Errors (400s) by Referrer</title>
         <search>
-          <query>tag=`datamodel` status&gt;=400 status&lt;500 
-| chart count over http_referer by status 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status&gt;=400 Web.status&lt;500)  Web.uri="$uri$" GROUPBY Web.http_referer,Web.status 
+| rename Web.* AS *
+| chart sum(count) AS count over http_referer by status 
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -224,8 +249,92 @@
       <table>
         <title>Web Server Errors (500s) by Referrer</title>
         <search>
-          <query>tag=`datamodel` status&gt;=500 
-| chart count over http_referer by status 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status&gt;=500)  Web.uri="$uri$" GROUPBY Web.http_referer,Web.status 
+| rename Web.* AS *
+| chart sum(count) AS count over http_referer by status 
+| addtotals 
+| sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Web Server Bad Request (400) by Server</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=400)  Web.uri="$uri$" GROUPBY Web.user,host 
+| rename Web.* AS *
+| chart sum(count) AS count over user by host 
+| addtotals 
+| sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Web Server Failed User Authentication (401) by Server</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" Web.status=401  Web.uri="$uri$" GROUPBY Web.user,host 
+| rename Web.* AS *
+| chart sum(count) AS count over user by host 
+| addtotals 
+| sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Web Server Access Denied (403) by Server</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=403)  Web.uri="$uri$" GROUPBY Web.user,host 
+| rename Web.* AS *
+| chart sum(count) AS count over user by host 
+| addtotals 
+| sort -Total</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Web Server Not Found (404) by Server</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=404)  Web.uri="$uri$" GROUPBY Web.uri,host 
+| rename Web.* AS *
+| chart sum(count) AS count over uri by host
+| rename uri AS http_request
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
