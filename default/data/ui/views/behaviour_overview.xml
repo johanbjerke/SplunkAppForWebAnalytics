@@ -26,6 +26,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+      <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
@@ -300,6 +301,69 @@
 | fields - Total 
 | rename percent AS "% Sessions" 
 | sort 0 "Session Duration"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Users</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY Web.user
+| rename Web.* AS * 
+| rename count as Requests 
+| rename user AS User
+| table User Requests
+| sort 0 -Requests</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Pages</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=pageview GROUPBY Web.uri
+| rename Web.* AS * 
+| rename uri AS Page 
+| rename count as Pageviews 
+| sort 0 -Pageviews</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Assets</title>
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.eventtype=non-pageview GROUPBY Web.uri
+| rename Web.* AS * 
+| rename uri AS Asset 
+| rename count as Requests 
+| sort 0 -Requests</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
