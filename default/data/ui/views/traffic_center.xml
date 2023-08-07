@@ -11,6 +11,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+      <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
@@ -29,6 +30,151 @@
       <default>*</default>
     </input>
   </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Request Status 200 By Server</title>
+        <search>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.status=200 GROUPBY host _time $span$ 
+
+| timechart $span$ count by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">/app/SplunkAppForWebAnalytics/troubleshooting_center?form.host=$click.name2$</link>
+        </drilldown>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Request Status 3xx By Server</title>
+        <search>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.status=3* GROUPBY host _time $span$ 
+
+| timechart $span$ count by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Request Status 4xx By Server</title>
+        <search>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.status=4* GROUPBY host _time $span$ 
+
+| timechart $span$ count by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Request Status 5xx By Server</title>
+        <search>
+          <query>| tstats summariesonly=t prestats=t count AS Requests FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.status=5* GROUPBY host _time $span$ 
+
+| timechart $span$ count by host</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
   <row>
     <panel>
       <chart>
@@ -213,6 +359,181 @@
         <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Traffic Activity and Trends per IP Address - Click to drill down</title>
+        <search>
+          <query>
+            | tstats summariesonly=t sum(Web.bytes_out) AS bytes_out FROM datamodel=`datamodel` WHERE Web.site="$site$" GROUPBY Web.site Web.clientip Web.uri Web.http_method Web.http_user_agent _time $span$ 
+| rename Web.* AS *
+| eval Country="Unknown" 
+| iplocation allfields=1 clientip 
+| eval Country=if(Country="United States", "USA", Country) 
+| eval Location=Region+" - "+City 
+| fields + * 
+| search (clientip="*") (clientip!=INVALIDIP) 
+| eval site_page_method="["+site+"]"+uri+" ["+http_method+"]" 
+| eventstats c as count_total by clientip 
+| eventstats c as count_page by clientip, site_page_method 
+| eval count_page_pct=round((count_page*100)/count_total, 1) 
+| eval count_page_pct=if(count_page_pct=0, 0.1, count_page_pct) 
+| eval sorter=100-count_page_pct 
+| eval sorter="["+if(sorter&lt;10, "0"+sorter, sorter) + "]" 
+| eval page_show=sorter+count_page+" hits = "+count_page_pct+"%: "+site_page_method 
+| eval country_region=Country+if(len(Region)&gt;0, "/"+Region, "")+if(len(City)&gt;0, "/"+City, "")
+| stats c,
+    first(country_region) as country_region,
+    sum(bytes_out) as bandwidth_total,
+    sparkline(c) as sparkline_ip,
+    sparkline(sum(bytes_out)) as sparkline_bw,
+    values(page_show) as Pages,
+    last(http_user_agent) as user_agent
+    by clientip, Country 
+| sort -c 
+| eval Pages=mvindex(Pages, 0, 1) 
+| rex mode=sed field=Pages "s/^\[[\d\.]+\]//g" 
+| eval top_pages=mvjoin(Pages, ", ") 
+| table clientip, country_region, c, sparkline_ip, bandwidth_total, sparkline_bw, top_pages, user_agent 
+| rename
+    clientip AS IP,
+    country_region AS "Country/Region",
+    sparkline_ip AS "Activity Trends and Patterns per IP address"
+    sparkline_bw AS "Bandwidth Trends per IP address"
+    c AS Hits,
+    bandwidth_total AS "Bandwidth",
+    top_pages AS "Top 2 pages/methods",
+    user_agent AS "Browser User Agent"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format field="Activity Trends and Patterns per IP address" type="sparkline">
+          <option name="type">bar</option>
+          <option name="height">16px</option>
+          <option name="barColor">#36DB04</option>
+          <option name="colorMap">
+            <option name="0">#555555</option>
+            <option name="1:2">#46D41D</option>
+            <option name="3:5">#F8F228</option>
+            <option name="6:9">#F9B235</option>
+            <option name="10:14">#F04327</option>
+            <option name="15:">#EE0000</option>
+          </option>
+          <option name="barWidth">5px</option>
+        </format>
+        <format field="Bandwidth Trends per IP address" type="sparkline">
+          <option name="type">bar</option>
+          <option name="height">16px</option>
+          <option name="barColor">#36DB04</option>
+          <option name="colorMap">
+            <option name="0">#555555</option>
+            <option name="1:99999">#3D92DB</option>
+            <option name="100000:299999">#3D92DB</option>
+            <option name="300000:599999">#F8F228</option>
+            <option name="600000:999999">#F9B235</option>
+            <option name="1000000:1499999">#F04327</option>
+            <option name="1500000:">#EE0000</option>
+          </option>
+          <option name="barWidth">2px</option>
+        </format>
+        <drilldown>
+          <set token="drilldown_ip">$row.IP$</set>
+          <unset token="drilldown_site"></unset>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html depends="$drilldown_ip$">
+        <h2>Detailed activity data about IP Address: <span class="drilldown-value">$drilldown_ip$</span>
+        </h2>
+      </html>
+      <table id="table_drilldown_ip1" depends="$drilldown_ip$">
+        <search>
+          <query>| tstats summariesonly=t sum(Web.bytes_out) AS bytes_out, first(Web.http_referer) AS http_referer FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.clientip="$drilldown_ip$" GROUPBY Web.site Web.clientip Web.uri Web.http_method Web.http_user_agent _time $span$ 
+| rename Web.* AS *
+| eval Country="Unknown" 
+| iplocation allfields=1 clientip 
+| eval Country=if(Country="United States", "USA", Country) 
+| eval Location=Region+" - "+City 
+| fields + *       
+| tail 1
+| eval country_region=Country+if(len(Region)&gt;0, "/"+Region, "")+if(len(City)&gt;0, "/"+City, "")
+| table _time clientip, country_region, http_referer, http_user_agent
+| rename ip AS IP, country_region AS "Country/Region", http_user_agent AS "Browser User Agent", http_referer AS "First referer"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+      <html depends="$drilldown_ip$">
+        <h2>User Agents for IP Address: <span class="drilldown-value">$drilldown_ip$</span>
+        </h2>
+      </html>
+      <table id="table_drilldown_ip3" depends="$drilldown_ip$">
+        <search>
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.clientip="$drilldown_ip$" GROUPBY Web.site Web.clientip Web.http_method Web.http_user_agent
+| rename Web.* AS *
+| eval method_show="[ "+http_method+" ]"
+| table count clientip, http_method, http_user_agent method_show
+| rename ip AS IP, http_user_agent AS "Browser User Agent", method_show AS Method, count AS Hits
+| sort - Hits</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+      <html depends="$drilldown_ip$">
+        <h2>Activity summary by Site / Web page for IP Address: <span class="drilldown-value">$drilldown_ip$</span>
+        </h2>
+      </html>
+      <table id="table_drilldown_ip2" depends="$drilldown_ip$">
+        <search>
+          <query>| tstats summariesonly=t sum(Web.bytes_out) AS bytes_out, first(Web.http_referer) AS http_referer FROM datamodel=`datamodel` WHERE Web.site="$site$" Web.clientip="$drilldown_ip$" GROUPBY Web.site Web.clientip Web.uri Web.http_method Web.http_user_agent Web.status _time $span$ 
+| rename Web.* AS *
+| eval Country="Unknown" 
+| iplocation allfields=1 clientip 
+| eval Country=if(Country="United States", "USA", Country) 
+| eval Location=Region+" - "+City 
+| fields + *       
+
+| eval bytes_out=coalesce(bytes_out,0)
+| eventstats sum(bytes_out) as page_bandwidth_total by site, uri, http_method, status
+| top site, uri, http_method, status, page_bandwidth_total limit=0
+| eval page_bandwidth_perpage = round(page_bandwidth_total/count, 2)
+| eval percent = tostring(round(percent, 2)) + " %"
+| eval subpage=urldecode(replace(uri, ".*?/([^/]+?)(/?)$", "\1\2")) | eval subpage=replace(subpage, "([^/]+).*", "\1")
+| eval method_show="[ "+http_method+" ]"
+| table count, percent, page_bandwidth_total, page_bandwidth_perpage, site, uri, method_show, status, subpage, http_user_agent
+| rename page_bandwidth_total AS "Bandwidth(total)",
+  page_bandwidth_perpage AS "Avg. Bandwidth(per page)",
+  page AS "page (full URL)",
+  method_show AS "Method",
+  status AS "HTTP Status",
+  subpage AS "page (last fragment)"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
