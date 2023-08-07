@@ -16,6 +16,7 @@
 <li>iis</li>
 <li>ms:iis:auto</li>
 <li>ms:iis:default</li>
+<li>ms:iis:default:custom</li>
 <li>apache:access</li>
 <li>apache:access:kv</li>
 <li>oracle:weblogic</li>
@@ -36,12 +37,13 @@
 <li>iis</li>
 <li>ms:iis:auto</li>
 <li>ms:iis:default</li>
+<li>ms:iis:default:custom</li>
 <li>apache:access</li>
 <li>apache:access:kv</li>
 <li>oracle:weblogic</li>
 <li>aws:cloudfront:accesslogs</li>
 </ul>
-<p id="1-loading" class="">If you already have data in Splunk under a different sourcetype you can use <a href="/manager/launcher/data/props/sourcetype-rename?ns=SplunkAppForWebAnalytics&amp;pwnr=-&amp;search=&amp;app_only=1" target="_blank" rel="noopener">sourcetype renaming</a> or by modifying the <a href="/manager/launcher/saved/eventtypes?ns=SplunkAppForWebAnalytics&amp;sort_dir=desc&amp;search=web-traffic&amp;sort_key=name&amp;app_only=True" target="_blank" rel="noopener">eventtype web-traffic</a> to include the names of your sourcetypes.</p>
+<p id="1-loading" class="">If you already have data in Splunk under a different sourcetype you can use <a href="/manager/launcher/data/props/sourcetype-rename?ns=SplunkAppForWebAnalytics&amp;pwnr=-&amp;search=&amp;app_only=1" target="_blank" rel="noopener">sourcetype renaming</a> or by modifying the <a href="/manager/launcher/saved/eventtypes?ns=SplunkAppForWebAnalytics&amp;sort_dir=desc&amp;search=web-traffic&amp;sort_key=name&amp;app_only=True" target="_blank" rel="noopener">eventtype web-traffic</a> and the macro called <a href="/manager/SplunkAppForWebAnalytics/data/macros/webanalytics_sourcetypes?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">`webanalytics_sourcetypes`</a> to include the names of your sourcetypes.</p>
 <p class="">Depending on the sourcetypes there are some prerequisite add-on with field extractions you need to download and install separately</p>
 <table class="table table-striped  table-chrome wrapped-results table-drilldown table-drilldown-cell">
 <tbody>
@@ -74,6 +76,10 @@
 <p> </p>
 <p>The app comes with three sets of sample data for Apache, IIS and IIS in the w3c format, ms:iis:default. You can configure these sample inputs by going into <a href="/manager/SplunkAppForWebAnalytics/data/inputs/monitor" target="_blank" rel="noopener">Settings-&gt;Data inputs-&gt;Files &amp; Directories</a></p>
 <p>Modify the eventtype called <a href="/manager/SplunkAppForWebAnalytics/saved/eventtypes/web-traffic?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">web-traffic</a> so it points to the correct indexes for the web logs.</p>
+<p>If you want to add more custom sourcetype configurations, make a copy of a similar sourcetype and correspondong transforms configurations into a new name. 
+Then add the custom sourcetype name to the the eventtype called <a href="/manager/SplunkAppForWebAnalytics/saved/eventtypes/web-traffic?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">web-traffic</a>
+and the macro called <a href="/manager/SplunkAppForWebAnalytics/data/macros/webanalytics_sourcetypes?action=edit&amp;ns=SplunkAppForWebAnalytics" target="_blank" rel="noopener">`webanalytics_sourcetypes`</a>
+</p>
 </div>
 
 			</html>
@@ -138,7 +144,7 @@
       <table id="datacheck_table_1">
         <title>Website Configuration check</title>
         <search>
-          <query>[| metadata type=sourcetypes
+          <query>eventtype=web-traffic [| metadata type=sourcetypes
     | search sourcetype="oracle:weblogic" OR sourcetype="aws:cloudfront:accesslogs" OR sourcetype="apache:access" OR sourcetype="apache:access:kv" OR sourcetype="iis" OR sourcetype="ms:iis:auto" OR sourcetype="ms:iis:default" OR sourcetype="access_combined" OR sourcetype="access_common" OR sourcetype="access_combined_wcookie"
     | eval latest=lastTime+3600, earliest=latest-3600
     | fields latest earliest sourcetype
