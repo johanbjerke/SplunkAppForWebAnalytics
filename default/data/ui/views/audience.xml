@@ -31,6 +31,7 @@
     </input>
     <input type="dropdown" token="span" searchWhenChanged="true">
       <label>Show by</label>
+     <choice value="1min">Minute</choice>
       <choice value="1h">Hour</choice>
       <choice value="1d">Day</choice>
       <choice value="1w">Week</choice>
@@ -84,7 +85,43 @@
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
-        <query>host=$site$</query>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.overlayFields">Count_24hours_before,Count_1hour_before,Count_24hours_before,Count_4hours_before,Count_168hours_before,Count_24hours_before,Count_4weeks_before,Count_1week_before,Count_12months_before,Count_30days_before,Count_1month_before</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart depends="$span$">
+        <title>Number of distinct users</title>
+        <search>
+          <query>| tstats summariesonly=t dc(Web.user) AS users FROM datamodel=`datamodel` WHERE Web.site="$site$"
+    GROUPBY _time $span$
+| fillnull value=0</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
