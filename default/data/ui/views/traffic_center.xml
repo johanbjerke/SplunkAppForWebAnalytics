@@ -421,7 +421,7 @@
         <option name="wrap">true</option>
         <format field="Activity Trends and Patterns per IP address" type="sparkline">
           <option name="type">bar</option>
-          <option name="height">16px</option>
+          <option name="height">16</option>
           <option name="barColor">#36DB04</option>
           <option name="colorMap">
             <option name="0">#555555</option>
@@ -435,7 +435,7 @@
         </format>
         <format field="Bandwidth Trends per IP address" type="sparkline">
           <option name="type">bar</option>
-          <option name="height">16px</option>
+          <option name="height">16</option>
           <option name="barColor">#36DB04</option>
           <option name="colorMap">
             <option name="0">#555555</option>
