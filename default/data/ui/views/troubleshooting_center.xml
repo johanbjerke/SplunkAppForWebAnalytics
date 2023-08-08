@@ -50,6 +50,8 @@
       <choice value="Web.ua_family,Web.ua_major,Web.ua_minor">ua_browser</choice>
       <choice value="Web.clientip">clientip</choice>
       <delimiter>,</delimiter>
+      <default>"Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip,host"</default>
+      <initialValue>Web.http_user_agent,Web.ua_family,Web.ua_major,Web.ua_minor,Web.clientip,host</initialValue>
     </input>
     <input type="radio" token="pageviews" searchWhenChanged="true">
       <label>Pageviews only</label>
@@ -268,12 +270,21 @@
   </row>
   <row>
     <panel>
+      <title>Web Server Bad Request (400) by Server</title>
+      <input type="dropdown" token="splitby1">
+        <label>Split-by</label>
+        <choice value="uri">Page</choice>
+        <choice value="clientip">Ip</choice>
+        <choice value="http_user_agent">User Agent</choice>
+        <choice value="user">User</choice>
+        <default>clientip</default>
+        <initialValue>clientip</initialValue>
+      </input>
       <table>
-        <title>Web Server Bad Request (400) by Server</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=400)  Web.uri="$uri$" GROUPBY Web.user,host 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=400)  Web.uri="$uri$" GROUPBY Web.$splitby1$,host 
 | rename Web.* AS *
-| chart sum(count) AS count over user by host 
+| chart sum(count) AS count over "$splitby1$" by host 
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -282,18 +293,26 @@
         <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
       </table>
     </panel>
     <panel>
+      <title>Web Server Failed User Authentication (401) by Server</title>
+      <input type="dropdown" token="splitby2">
+        <label>Split-by</label>
+        <choice value="uri">Page</choice>
+        <choice value="clientip">Ip</choice>
+        <choice value="http_user_agent">User Agent</choice>
+        <choice value="user">User</choice>
+        <default>clientip</default>
+        <initialValue>clientip</initialValue>
+      </input>
       <table>
-        <title>Web Server Failed User Authentication (401) by Server</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" Web.status=401  Web.uri="$uri$" GROUPBY Web.user,host 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" Web.status=401  Web.uri="$uri$" GROUPBY Web.$splitby2$,host 
 | rename Web.* AS *
-| chart sum(count) AS count over user by host 
+| chart sum(count) AS count over "$splitby2$" by host 
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -302,18 +321,26 @@
         <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
       </table>
     </panel>
     <panel>
+      <title>Web Server Access Denied (403) by Server</title>
+      <input type="dropdown" token="splitby3">
+        <label>Split-by</label>
+        <choice value="uri">Page</choice>
+        <choice value="clientip">Ip</choice>
+        <choice value="http_user_agent">User Agent</choice>
+        <choice value="user">User</choice>
+        <default>clientip</default>
+        <initialValue>clientip</initialValue>
+      </input>
       <table>
-        <title>Web Server Access Denied (403) by Server</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=403)  Web.uri="$uri$" GROUPBY Web.user,host 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=403)  Web.uri="$uri$" GROUPBY Web.$splitby3$,host 
 | rename Web.* AS *
-| chart sum(count) AS count over user by host 
+| chart sum(count) AS count over "$splitby3$" by host 
 | addtotals 
 | sort -Total</query>
           <earliest>$field1.earliest$</earliest>
@@ -322,18 +349,26 @@
         <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
       </table>
     </panel>
     <panel>
+      <title>Web Server Not Found (404) by Server</title>
+      <input type="dropdown" token="splitby4">
+        <label>Split-by</label>
+        <choice value="uri">Page</choice>
+        <choice value="clientip">Ip</choice>
+        <choice value="http_user_agent">User Agent</choice>
+        <choice value="user">User</choice>
+        <default>uri</default>
+        <initialValue>uri</initialValue>
+      </input>
       <table>
-        <title>Web Server Not Found (404) by Server</title>
         <search>
-          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=404)  Web.uri="$uri$" GROUPBY Web.uri,host 
+          <query>| tstats summariesonly=t count FROM datamodel=`datamodel` WHERE Web.site="$site$" host="$host$" (Web.status=404)  Web.uri="$uri$" GROUPBY Web.$splitby4$,host 
 | rename Web.* AS *
-| chart sum(count) AS count over uri by host
+| chart sum(count) AS count over "$splitby4$" by host
 | rename uri AS http_request
 | addtotals 
 | sort -Total</query>
@@ -343,7 +378,6 @@
         <option name="count">10</option>
         <option name="dataOverlayMode">heatmap</option>
         <option name="drilldown">cell</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
       </table>
